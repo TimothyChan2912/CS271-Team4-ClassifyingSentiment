@@ -1,0 +1,128 @@
+\documentclass[sigconf,nonacm]{acmart}
+
+\emergencystretch=1em
+\settopmatter{printfolios=true}
+\setcopyright{none}
+
+\title{Classifying Sentiment in Social Media Posts Using Text and Emojis}
+
+\author{Timothy Chan}
+\affiliation{%
+  \institution{San Jose State University}
+  \city{San Jose}
+  \state{California}
+  \country{USA}}
+\email{timothy.chan@sjsu.edu}
+
+\author{John Brisebois}
+\affiliation{%
+  \institution{San Jose State University}
+  \city{San Jose}
+  \state{California}
+  \country{USA}}
+\email{john.brisebois@sjsu.edu}
+
+\author{Shivam Shelar}
+\affiliation{%
+  \institution{San Jose State University}
+  \city{San Jose}
+  \state{California}
+  \country{USA}}
+\email{shivam.shelar@sjsu.edu}
+
+% Repeat the author block for each team member.
+
+\begin{document}
+
+\begin{abstract}
+Identifying emotions in social media posts can assist social media companies, marketing analysts, and public relations managers in understanding the consensus public sentiment towards topics of public interest such as product releases or events. However, traditional text classifiers might struggle with classifying text evoking weaker or implicit emotions. This project proposes developing a machine learning model that will text and emojis to classify social media posts into an emotional category through multiclass classification. The model will be trained using publicly available social media datasets from Kaggle will be used. To evaluate the performance, the model will be evaluated using held-out data and compared after against a logistic regression model baseline. The expected contribution is an emotional classification model capable of identifying the general emotion in text. Possible limitations include inconsistent emotion labels, difficulty recognizing sarcasm, or posts expressing multiple emotions. 
+\end{abstract}
+
+\keywords{machine learning, logistic regression, multiclass classification, sentiment analysis, RoBERTa, natural language processing}
+
+\maketitle
+
+\section{Problem and Significance}
+As social media continues to grow in influence, consumer opinions and perceptions are vital to business success. Social media platforms provide these businesses with a direct source of consumer sentiment, capturing reactions to product releases, event announcements, and other topics of public interest. Through these reactions, marketing analysts, social media companies, and public relations managers can gain insight on how their audiences respond to information and the overwhelming emotions expressed in online discourse. However, manually examining large numbers of posts is inefficient, making emotion classification automation a useful tool for large scale analysis on social media content.
+
+Traditional classification methods like logistic regression can observe and categorize text using patterns from training data. Still, identifying emotions is more intricate than simply associating specific words with specific feelings. The underlying sentiment of a post can depend on factors like context, phrasing, and emojis with the combination of all three being used to elicit a certain response. Furthermore, less obvious or conflicting expressions such as sarcasm may not be easily captured by simple word patterns. Sometimes, posts may express more than one emotion which poses a challenge to classification models receiving one label. 
+
+This project proposes developing a machine learning model that classifies social media posts into established emotional categories using text and emojis as inputs. The unit of observation will be a singular post, and the output will be one dominating emotional category. Several publicly available Kaggle datasets will be used for training and  examined for compatibility with the model. The proposed model will be compared against a logistic regression baseline using held-out data and logical success metrics. Naturally, success will be defined through classification accuracy and in some cases, its interpretation of complex and ambiguous sentiment. Initially, this project will focus on classifying individual posts and returning the correct emotion. Within feasibility, one important non-goal is to take the general emotion from metrics and generate a summary highlighting this.
+
+
+\section{Related Work and Current Practice}
+One of the datasets this project uses was used in a similar 2009 Stanford Study. ~\cite{go2009twitter}  This study was able to achieve 83\% accuracy through a logistic regression approach and 65\% accuracy with keyword matching.  Their maximum entropy model predicts whether a tweet is positive or negative based on word combinations that the model learns means one or the other.
+
+Because of the advancements in natural language processors, a modern approach could fine tune a pretrained RoBERTa encoder with a classification layer matching the datasets' categories.  This should result in a much higher accuracy than the old study's 83\%.
+
+\section{Data and Task Formulation}
+This project will use three different datasets.  One is 1.6 million tweets gathered in 2009 by stanford students attempting to build a similar machine learning project. ~\cite{sentiment140kaggle}  The second is 14.6 thousand tweets about airlines specifically collected in 2015.~\cite{crowdflower_airline_sentiment}  Finally, a small dataset of around 800 different social media posts and a specific emotion assigned to each one.\cite{parmar_social_media_sentiments}  These features can be normalized to positive, neutral, and negative to be used in the test set as a way to determine if the selected model is viable in all kinds of social media posts.  All of these datasets can be used for non-commercial purposes.  All information in these datasets, such as tweet IDs, usernames, and text, are public information.  Therefore there are no privacy concerns to be aware of.
+
+Each row represents a single social media post.  Each prediction assigns the label positive, negative, or neutral.  Label compatibility between datasets can be achieved through standardization.  All emotions must be mapped to the most generic version of itself across the datasets.  For example, "angry" can be standardized to "negative", but the reverse is not possible.  At prediction time, the only information available will be the post content itself.  No metadata, such as date or time, will be included in each row.  Text can be converted into TF IDF features for logistic regression or embeddings for a language model.  The target will be a categorical label representing the dominant emotion expressed in a post.
+
+While further analysis is needed, the datasets appear to be complete without any obvious gaps or failures.  The main limitation of these datasets are the small old windows in which they were gathered, so choosing a model based on test results from over a decade ago may have reduced accuracy if used on posts from today.  Because of this, additional datasets may be included if found.
+
+\section{Proposed Approach and Comparisons}
+All models predict the same three classes from the same preprocessed post text and are evaluated under the same protocol described in Section~5.
+ 
+\textbf{Reference baseline.} The 83\% accuracy reported by the 2009 Stanford study~\cite{go2009twitter} for positive-versus-negative classification. Our models' binary accuracy on positive and negative posts is compared against this figure to show how much modern methods improve on the original result.
+ 
+\textbf{Simple baseline.} Logistic regression on TF-IDF unigram and bigram features, with regularization strength tuned on the validation split. This reproduces the classical approach of the 2009 Stanford study~\cite{go2009twitter} on our data and sets the floor the other models must beat.
+ 
+\textbf{Strong literature comparison.} The pretrained TweetEval RoBERTa sentiment model~\cite{barbieri2020tweeteval}, applied without further training. It already predicts the same three classes, so it shows what an existing, tweet-specialized model achieves with no project-specific training.
+ 
+\textbf{Proposed method.} A pretrained RoBERTa encoder~\cite{liu2019roberta} fine-tuned with a classification layer on our training split. If training time becomes a constraint, the smaller DistilRoBERTa model is the fallback. Comparing this model with the strong comparison shows the value of fine-tuning on our data, and comparing it with the baseline shows the value of a pretrained transformer.
+ 
+\textbf{Planned ablation: emojis.} The baseline and the proposed model are each trained and evaluated in two conditions: with emojis removed, and with emojis kept and converted to short text descriptions so both TF-IDF and RoBERTa can process them consistently. This directly tests the project's premise that emojis carry sentiment information beyond the text.
+
+\section{Evaluation Plan}
+The split unit will be an individual social media post containing its text, possible emojis, and its corresponding labeled emotion. The data will be divided into 3 groups for training, validation, and testing using an 80/10/10 split. The training data will be used to train the models; specifically, learning and updating its parameters such as weights and intercepts to minimize loss. The validation data will be used to tune hyperparameters and select the best performing model configuration and the protected test data will be used for one final evaluation once the pipeline is frozen and finalized.
+
+The primary metric that will be used to evaluate the model will be a macro-averaged F1 score, which will be calculated by taking the mean of the F1 scores for  all emotional categories. Furthermore, each individual F1 score represents the harmonic mean of precision and recall. The equation is: \[
+\text{Macro-F1} = \frac{1}{N}\sum_{i=1}^{N} F1_i\] where N represents the number of emotional categories and $F1_i$ represents the F1 score for category i. The summation of the individual F1 scores is taken and then later divided by the number of categories to average it out. This allows every category to have equal contribution to the macro-averaged F1 score helping to resolve any imbalances in the data. As a secondary diagnostics, accuracy can be used to measure how correct the overall classification was. For error slices, sarcasm, emoji usage, and ambiguous emotions will be examined to determine the mistakes it makes in prediction.
+
+To compare the logistic regression baseline and improved model, the same data split and evaluation metrics will be used to ensure consistency. Using the validation data, the best performing model configuration will be chosen based on the macro-averaged F1 score. To control randomness, the random seeds used in model configuration will be recorded. Doing this will support reproducibility, where reproduced experiments will be able to use different seeds and determine the consistency of the model.
+
+All the learned preprocessing will be fitted using the training data alone. Specifically, the weights will be learned from the training data and then stay unchanged while being used in the validation and testing stages. This is to prevent data leakage, where evaluation data should not influence model training. The evaluation protocol will decide whether the improved model performs better than the logistic regression baseline on the given dataset. To reiterate, the findings will be observed in the context of the dataset and are not definite assessments to confirm an author's emotional state.
+
+\section{Risks Resources and Scope}
+The main risk of this project is that the model may struggle with cases with subtle emotional expressions, sarcasm, or posts conveying multiple emotions. Also, the model's performance will depend heavily on its compatibility with the Kaggle datasets. In particular, the label's scoring system must be consistent with the models output. For example, one dataset might classify sentiment using a scoring system from 1-10 with 1 indicating negative and 10 positive. In this case, the utility of the dataset would be limited since it does not directly identify specific emotions. Additionally, the dataset may contains biases which restrict the model's ability to generalize across different topics.
+
+The project will require publicly available social media datasets, a consistent Python environment, and Python machine learning libraries for processing text, model training, and evaluation. A logistic regression classifier will be used as the initial baseline against a more advanced classification model. We expect to have enough computational power to train and test the intended models, making dataset suitability and time as the the two primary constraints. Although the datasets are publicly available, they may still have specific licensing conditions or usage restrictions that need to be verified before use. Furthermore, the datasets may contain potentially sensitive information which will need to be removed from the project's findings.
+
+The minimum complete project will be building and training the baseline logistic regression model and an improved separate model on a suitable Kaggle dataset with defined emotional categories. Specifically, the model will be evaluated using held-out test data and its performance will be measured through the model's accuracy in predicting the classified emotions labeled in the dataset. With additional time, optional extensions to the project include testing on multiple datasets to compare results and transforming the model into a multi-label classifier, enabling it to classify posts as expressing multiple emotions. However, it should be stated that this project does not attempt to claim to know the true nature of an author's emotional state, or generalize for every platform. Rather, conclusions will be based off training from the limited set of datasets and be interpreted as estimates instead of definite predictions of the author's emotion.
+
+\section{Work Plan and Evidence Checkpoints}
+\textbf{Friday, October 23: baseline and evaluation protocol (Sprint~1).}
+\begin{itemize}
+\item \emph{Timothy Chan:} data pipeline that loads the datasets, removes duplicates, applies the label mapping, and saves the frozen 80/10/10 split.
+\item \emph{John Brisebois:} macro-F1 and diagnostic metric implementation; logistic regression baseline trained and scored on the validation split, including binary accuracy compared against the 83\% Stanford reference.
+\item \emph{Shivam Shelar:} pretrained TweetEval comparison scored on the validation split; repository structure and pinned environment so results can be reproduced with one command.
+\end{itemize}
+Evidence: a working pipeline, frozen split and evaluation plan, and a reproducible baseline result.
+ 
+\textbf{Tuesday, November 10: experiment and ablation check.}
+\begin{itemize}
+\item \emph{Shivam Shelar:} RoBERTa fine-tuning across three seeds, with validation results and saved checkpoints.
+\item \emph{Timothy Chan:} emoji ablation for the baseline and the fine-tuned model.
+\item \emph{John Brisebois:} per-dataset evaluation and error-slice tooling.
+\end{itemize}
+Evidence: the main experiment running end to end, with the emoji ablation checked on the validation split.
+ 
+\textbf{Tuesday, November 24: results and reproducibility check.}
+\begin{itemize}
+\item \emph{All:} pipeline frozen; single evaluation on the protected test set.
+\item \emph{John Brisebois:} error analysis and manual review of misclassified posts.
+\item \emph{Shivam Shelar:} draft results tables and figures.
+\item \emph{Timothy Chan:} README and repository verified by running it from a fresh environment.
+\end{itemize}
+Evidence: frozen preliminary results, draft figures and tables, error analysis, and a repository another person can run.
+ 
+\textbf{December 1 and 3: presentations.} Each member presents the components they owned.
+\section{Expected Contribution}
+This project aims to develop a machine learning model that classifies a social media post into a predefined emotional category with text and emojis as the inputs. If the results might show better performance than the baseline logistic regression model, the project will have evidence that the selected model is more effective and accurate at identifying emotions from text in the chosen dataset. With the same dataset and evaluation protocol, it will also have reproducible comparison of both models. If the developed model does not outperform the baseline, the results might still be useful in determining the shortcomings of the proposed approach and the pitfalls when it comes to classifying emotions from text. 
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{project_references}
+
+\end{document}
