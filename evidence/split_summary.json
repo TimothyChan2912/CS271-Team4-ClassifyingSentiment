@@ -1,0 +1,50 @@
+{
+  "partition_sizes": {
+    "dev": 521,
+    "test": 131
+  },
+  "class_counts_by_partition": {
+    "dev": {
+      "negative": 145,
+      "neutral": 32,
+      "positive": 344
+    },
+    "test": {
+      "negative": 36,
+      "neutral": 8,
+      "positive": 87
+    }
+  },
+  "class_counts_by_fold": {
+    "0": {
+      "negative": 29,
+      "neutral": 7,
+      "positive": 69
+    },
+    "1": {
+      "negative": 29,
+      "neutral": 6,
+      "positive": 69
+    },
+    "2": {
+      "negative": 29,
+      "neutral": 6,
+      "positive": 69
+    },
+    "3": {
+      "negative": 29,
+      "neutral": 6,
+      "positive": 69
+    },
+    "4": {
+      "negative": 29,
+      "neutral": 7,
+      "positive": 68
+    }
+  },
+  "settings": {
+    "seed": 42,
+    "n_folds": 5,
+    "test_size": 0.2
+  }
+}

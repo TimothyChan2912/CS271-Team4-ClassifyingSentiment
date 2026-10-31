@@ -34,3 +34,23 @@ If this file is modified, the following values may change:
 Any changes to the cleaning configuration or upstream data should be followed by rerunning the cleaning script and regenerating the evidence record. The data split should also be regenerated if the final cleaned dataset changes.
 
 The `raw_sha256` field identifies the original raw dataset file. If the hash differs between runs, check whether the raw dataset file or its version has changed.
+
+## 4. Split Summary (`evidence/split_summary.json`)
+
+| Key | Meaning |
+|---|---|
+| `partition_sizes` | Number of posts in the `dev` and `test` partitions. |
+| `class_counts_by_partition` | Posts per sentiment class in each partition. |
+| `class_counts_by_fold` | Posts per sentiment class in each of the 5 dev folds (the held-out fold in each CV round). |
+| `settings` | Seed, number of folds, and test fraction used to create the split. |
+
+- **Produced by:** `python src/make_split.py`.
+- **Inputs:** `data/processed/clean.parquet`.
+- **Outputs:** `splits/split.csv` and `evidence/split_summary.json`.
+- **Expected values:** dev 521 posts, 131 test posts; seed 42, 5 folds, test fraction 0.2. Fill in from the file. A rerun must produce an identical `split.csv`.
+
+## 5. Split Boundary Check (`evidence/split_check_output.txt`)
+
+- **Produced by:** `python src/check_split.py > evidence/split_check_output.txt`.
+- **What it checks:** split IDs match the cleaned data and contain no duplicates; no post is in both dev and test; no identical text appears in both dev and test; all 5 folds exist; every fold contains all three classes; test posts all have fold -1.
+- **Expected output:** `All split checks passed.` If any check fails, the script stops with an assertion message naming the problem, and the split must not be used.
