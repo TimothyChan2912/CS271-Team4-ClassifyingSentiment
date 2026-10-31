@@ -1,0 +1,15 @@
+{
+  "raw": 732,
+  "after_empty_removed": 732,
+  "conflicting_groups": 0,
+  "after_dedup": 706,
+  "dropped_ambiguous": 54,
+  "final": 652,
+  "class_counts": {
+    "positive": 431,
+    "negative": 181,
+    "neutral": 40
+  },
+  "posts_with_emoji": 11,
+  "raw_sha256": "725c6f7bc928c2bf741094f37078024b305982523fe6d0b8cb20a6cf5275c63b"
+}

@@ -1,0 +1,18 @@
+# Ignore dataset files but keep folder structure
+data/*
+!data/raw/
+!data/processed/
+
+data/raw/*
+!data/raw/.gitkeep
+
+data/processed/*
+!data/processed/.gitkeep
+
+
+# Python virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc

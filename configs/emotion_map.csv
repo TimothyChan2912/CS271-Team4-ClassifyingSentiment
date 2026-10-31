@@ -1,0 +1,192 @@
+emotion,n,sentiment,note
+positive,45,positive,
+joy,44,positive,
+excitement,37,positive,
+neutral,18,neutral,
+contentment,18,positive,
+gratitude,17,positive,
+curiosity,16,positive,judgment call
+serenity,15,positive,
+happy,14,positive,
+despair,11,negative,
+nostalgia,11,drop,"ambiguous, dropped"
+awe,9,positive,judgment call
+grief,9,negative,
+sad,9,negative,
+acceptance,8,neutral,judgment call
+confusion,8,drop,"ambiguous, dropped"
+loneliness,8,negative,
+embarrassed,8,negative,
+pride,7,positive,
+elation,7,positive,
+euphoria,7,positive,
+enthusiasm,7,positive,
+determination,7,positive,judgment call
+surprise,6,drop,"ambiguous, dropped"
+frustration,6,negative,
+regret,6,negative,
+indifference,6,neutral,
+melancholy,6,negative,
+ambivalence,6,drop,"ambiguous, dropped"
+hate,6,negative,
+bad,6,negative,
+disgust,5,negative,
+happiness,5,positive,
+hope,5,positive,
+empowerment,5,positive,
+numbness,5,negative,judgment call
+hopeful,5,positive,
+bitterness,5,negative,
+inspiration,5,positive,
+betrayal,5,negative,
+negative,4,negative,
+admiration,4,positive,
+calmness,4,positive,judgment call
+compassion,4,positive,
+tenderness,4,positive,
+arousal,4,drop,"ambiguous, dropped"
+fulfillment,4,positive,
+reverence,4,positive,judgment call
+boredom,4,negative,judgment call
+overwhelmed,4,negative,
+frustrated,4,negative,
+thrill,4,positive,
+reflection,4,neutral,judgment call
+enchantment,4,positive,
+desolation,4,negative,
+love,3,positive,
+amusement,3,positive,
+anticipation,3,drop,"ambiguous, dropped"
+bitter,3,negative,
+kind,3,positive,
+shame,3,negative,
+jealousy,3,negative,
+resentment,3,negative,
+grateful,3,positive,
+playful,3,positive,
+inspired,3,positive,
+fearful,3,negative,
+jealous,3,negative,
+devastated,3,negative,
+envious,3,negative,
+satisfaction,3,positive,
+accomplishment,3,positive,
+harmony,3,positive,
+creativity,3,positive,
+wonder,3,positive,
+adventure,3,positive,
+heartbreak,3,negative,
+anger,2,negative,
+fear,2,negative,
+sadness,2,negative,
+enjoyment,2,positive,
+affection,2,positive,
+disappointed,2,negative,
+adoration,2,positive,
+anxiety,2,negative,
+intimidation,2,negative,
+helplessness,2,negative,
+envy,2,negative,
+zest,2,positive,
+proud,2,positive,
+empathetic,2,positive,judgment call
+compassionate,2,positive,
+free-spirited,2,positive,
+confident,2,positive,
+yearning,2,drop,"ambiguous, dropped"
+apprehensive,2,negative,
+dismissive,2,negative,judgment call
+contemplation,2,neutral,judgment call
+whimsy,2,positive,
+radiance,2,positive,
+resilience,2,positive,
+isolation,2,negative,
+disappointment,2,negative,
+sorrow,2,negative,
+loss,2,negative,
+exploration,2,positive,judgment call
+captivation,2,positive,
+tranquility,2,positive,
+emotion,2,drop,"ambiguous, dropped"
+mischievous,2,positive,judgment call
+bittersweet,1,drop,"ambiguous, dropped"
+overjoyed,1,positive,
+motivation,1,positive,
+joyfulreunion,1,positive,
+blessed,1,positive,
+appreciation,1,positive,
+confidence,1,positive,
+wonderment,1,positive,
+optimism,1,positive,
+intrigue,1,positive,judgment call
+playfuljoy,1,positive,
+mindfulness,1,neutral,judgment call
+dreamchaser,1,positive,
+elegance,1,positive,
+pensive,1,neutral,judgment call
+rejuvenation,1,positive,
+coziness,1,positive,
+melodic,1,positive,judgment call
+festivejoy,1,positive,
+innerjourney,1,drop,"ambiguous, dropped"
+freedom,1,positive,
+dazzle,1,positive,
+adrenaline,1,drop,"ambiguous, dropped"
+artisticburst,1,positive,
+culinaryodyssey,1,positive,
+immersion,1,drop,"ambiguous, dropped"
+spark,1,positive,
+marvel,1,positive,
+suffering,1,negative,
+emotionalstorm,1,negative,
+lostlove,1,negative,
+exhaustion,1,negative,
+darkness,1,negative,
+desperation,1,negative,
+ruins,1,negative,
+heartache,1,negative,
+solitude,1,drop,"ambiguous, dropped"
+positivity,1,positive,
+kindness,1,positive,
+friendship,1,positive,
+success,1,positive,
+amazement,1,positive,
+romance,1,positive,
+grandeur,1,positive,
+energy,1,positive,
+celebration,1,positive,
+charm,1,positive,
+ecstasy,1,positive,
+colorful,1,positive,
+hypnotic,1,drop,"ambiguous, dropped"
+connection,1,positive,
+iconic,1,positive,
+journey,1,drop,"ambiguous, dropped"
+engagement,1,drop,"ambiguous, dropped"
+touched,1,positive,
+suspense,1,drop,"ambiguous, dropped"
+triumph,1,positive,
+heartwarming,1,positive,
+obstacle,1,negative,
+sympathy,1,positive,judgment call
+pressure,1,negative,
+renewed effort,1,positive,
+miscalculation,1,negative,
+challenge,1,drop,"ambiguous, dropped"
+solace,1,positive,
+breakthrough,1,positive,
+joy in baking,1,positive,
+envisioning history,1,drop,"ambiguous, dropped"
+imagination,1,positive,
+vibrancy,1,positive,
+mesmerizing,1,positive,
+culinary adventure,1,positive,
+winter magic,1,positive,
+thrilling journey,1,positive,
+nature's beauty,1,positive,
+celestial wonder,1,positive,
+creative inspiration,1,positive,
+runway creativity,1,positive,
+ocean's freedom,1,positive,
+whispers of the past,1,drop,"ambiguous, dropped"
+relief,1,positive,
