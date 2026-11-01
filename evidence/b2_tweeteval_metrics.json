@@ -1,0 +1,68 @@
+{
+  "pooled": {
+    "n": 521,
+    "macro_f1": 0.6783432477291128,
+    "accuracy": 0.8195777351247601,
+    "per_class_f1": {
+      "negative": 0.8897338403041825,
+      "neutral": 0.25,
+      "positive": 0.8952959028831563
+    },
+    "confusion_matrix": {
+      "labels": [
+        "negative",
+        "neutral",
+        "positive"
+      ],
+      "rows_true_cols_pred": [
+        [
+          117,
+          25,
+          3
+        ],
+        [
+          0,
+          15,
+          17
+        ],
+        [
+          1,
+          48,
+          295
+        ]
+      ]
+    }
+  },
+  "per_fold_macro_f1": {
+    "0": 0.687843130022071,
+    "1": 0.6775676649818526,
+    "2": 0.7285766158315178,
+    "3": 0.6859816780372888,
+    "4": 0.6110988254951103
+  },
+  "per_fold_macro_f1_mean": 0.6782135828735681,
+  "per_fold_macro_f1_std": 0.04240965231339878,
+  "binary_pos_neg_vs_B0": {
+    "n": 489,
+    "accuracy": 0.9754601226993865
+  },
+  "config": {
+    "id": "B2",
+    "max_length": 128,
+    "truncation": true,
+    "zero_shot": true,
+    "preprocess": false,
+    "partition": "dev",
+    "test_exposure": "none",
+    "model": "cardiffnlp/twitter-roberta-base-sentiment",
+    "revision_requested": "main",
+    "model_commit": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
+    "device": "mps",
+    "posts_truncated_at_128_tokens": 0,
+    "versions": {
+      "python": "3.14.8",
+      "torch": "2.15.0",
+      "transformers": "5.22.1"
+    }
+  }
+}

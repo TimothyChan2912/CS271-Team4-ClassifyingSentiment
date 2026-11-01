@@ -9,6 +9,14 @@ DRAFT_PATH = "configs/emotion_map_draft.csv"
 for d in ["configs", "evidence", "data/processed"]:
     os.makedirs(d, exist_ok=True)
 
+# frozen data version (PROTOCOL.md Section 2); set ALLOW_NEW_RAW=1 only when deliberately
+# moving to a new dataset version, then update this hash and version the protocol
+EXPECTED_SHA256 = "725c6f7bc928c2bf741094f37078024b305982523fe6d0b8cb20a6cf5275c63b"
+raw_sha256 = hashlib.sha256(open(RAW, "rb").read()).hexdigest()
+if raw_sha256 != EXPECTED_SHA256 and os.environ.get("ALLOW_NEW_RAW") != "1":
+    raise SystemExit(f"{RAW} has SHA-256 {raw_sha256}, expected {EXPECTED_SHA256}. "
+                     "Re-download the Kaggle file (it may have been updated) or check the path.")
+
 df = pd.read_csv(RAW)
 df = df.rename(columns={"Text": "text", "Sentiment": "emotion"})
 df = df[["text", "emotion"]].copy()
@@ -62,7 +70,7 @@ out.to_parquet("data/processed/clean.parquet", index=False)
 # evidence
 counts["class_counts"] = out["sentiment"].value_counts().to_dict()
 counts["posts_with_emoji"] = int(out["text"].map(lambda t: emoji.emoji_count(t) > 0).sum())
-counts["raw_sha256"] = hashlib.sha256(open(RAW, "rb").read()).hexdigest()
+counts["raw_sha256"] = raw_sha256
 with open("evidence/prepare_data_counts.json", "w") as f:
     json.dump(counts, f, indent=2)
 print(json.dumps(counts, indent=2))
