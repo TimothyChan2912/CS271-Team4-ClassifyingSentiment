@@ -56,7 +56,7 @@
     "test_exposure": "none",
     "model": "cardiffnlp/twitter-roberta-base-sentiment",
     "revision_requested": "main",
-    "model_commit": null,
+    "model_commit": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
     "device": "mps",
     "posts_truncated_at_128_tokens": 0,
     "versions": {

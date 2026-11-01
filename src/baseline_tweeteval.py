@@ -44,6 +44,15 @@ def pick_device(torch, requested):
     return "cpu"
 
 
+def resolve_commit(revision):
+    """Exact Hugging Face commit of the model, so reruns can pin it with --revision."""
+    try:
+        from huggingface_hub import HfApi
+        return HfApi().model_info(MODEL, revision=revision).sha
+    except Exception:
+        return None
+
+
 def predict(texts, batch_size, device_arg, revision):
     """Return (probs (n,3) in LABELS order, run info)."""
     import torch
@@ -68,7 +77,7 @@ def predict(texts, batch_size, device_arg, revision):
     info = {
         "model": MODEL,
         "revision_requested": revision,
-        "model_commit": getattr(model.config, "_commit_hash", None),
+        "model_commit": getattr(model.config, "_commit_hash", None) or resolve_commit(revision),
         "device": device,
         "posts_truncated_at_128_tokens": int(sum(n > MAX_LENGTH for n in lengths)),
         "versions": {"python": platform.python_version(), "torch": torch.__version__,
