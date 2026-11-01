@@ -22,7 +22,7 @@ The file contains IDs and assignments only, with no post text and no labels. Joi
  
 ```bash
 python src/data_cleaning.py     # writes data/processed/clean.parquet
-python src/make_split.py        # writes splits/split_v1.csv and evidence/split_summary.json
+python src/make_split.py        # writes splits/split.csv and evidence/split_summary.json
 python src/check_split.py > evidence/split_check_output.txt
 ```
  
