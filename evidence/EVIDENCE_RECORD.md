@@ -63,16 +63,37 @@ The `raw_sha256` field identifies the original raw dataset file. If the hash dif
 - **Contents:** pooled macro-F1, accuracy, per-class F1, and confusion matrix; per-fold macro-F1 with mean and sample std; positive-vs-negative accuracy (context for B0 only, not comparable); model commit, device, and library versions.
 - **Expected values:** deterministic for a fixed model commit. CPU vs. GPU floating-point differences can flip a few borderline predictions; the device is recorded.
 
-## 7. Teammate Rerun
+## 7. Results Table (`evidence/results.csv`)
 
-Fresh clone, new virtual environment, `python run_all.py --remake-split --skip-b2`, then `git diff --exit-code splits/ evidence/prepare_data_counts.json evidence/split_summary.json`.
+- **Produced by:** `python src/collect_results.py` (also run at the end of `run_all.py`).
+- **Contents:** one row per baseline run with baseline and run ID, raw-data and split-file SHA-256, configuration, seed, evaluation count, primary metric (pooled out-of-fold macro-F1; higher is better; unitless, 0 to 1), per-fold mean and std, accuracy, per-class F1, runtime, hardware, and output paths.
+- **Extra configurations tried:** none. One fixed configuration per baseline, as set by protocol v1. The optional `--preprocess` route for B2 was not run.
+
+## 8. Error Slice (`evidence/error_slice_neutral.md`)
+
+- **Produced by:** `python src/error_slice.py` (dev predictions only).
+- **Slice:** dev posts whose true label is neutral (32 of 521). Neutral is the smallest class and the lowest per-class F1 for B2, so it limits macro-F1 the most.
+- **Reports:** per-baseline neutral recall, where misclassified neutral posts go, and the posts that every baseline gets wrong.
+
+## 9. Teammate Rerun (every baseline)
+
+Run in a fresh clone with a new virtual environment, by a teammate who did not write the baseline being checked:
+
+```bash
+python run_all.py --remake-split
+git diff --exit-code splits/ evidence/prepare_data_counts.json evidence/split_summary.json && echo "SPLIT REPRODUCED"
+```
 
 | Check | Expected | Observed |
 |---|---|---|
 | Raw SHA-256 | `725c6f7b...5275c63b` | |
-| `final` rows | 652 | |
-| Class counts | positive 431, negative 181, neutral 40 | |
-| `split.csv` identical to committed file | yes (no diff output) | |
+| `final` rows; class counts | 652; positive 431, negative 181, neutral 40 | |
+| `split.csv` identical to committed file | yes (`SPLIT REPRODUCED`) | |
 | `check_split.py` | `All split checks passed.` | |
+| B1 pooled macro-F1 (dev, n = 521) | B1_VALUE | |
+| B2 pooled macro-F1 (dev, n = 521) | 0.6783 | |
+| B2 accuracy; neutral F1 | 0.8196; 0.2500 | |
 
-Rerun by: ______ on ______ (OS, Python version: ______).
+Small differences in B2 across CPU, Apple GPU (mps), and CUDA can come from floating-point arithmetic; record the device. B1 is deterministic and must match exactly.
+
+Rerun by: ______ on ______ (OS, device, Python version: ______).
