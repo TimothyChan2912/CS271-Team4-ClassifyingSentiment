@@ -1,0 +1,88 @@
+{
+  "baseline_id": "baseline_logreg",
+  "run_id": "baseline_logreg_20261101T233609241863Z",
+  "config": {
+    "data_version": "kaggle-social-2026-10-30",
+    "split": "splits/split.csv",
+    "partition": "dev",
+    "split_seed": 42,
+    "n_folds": 5,
+    "tfidf": {
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 1,
+      "sublinear_tf": true,
+      "lowercase": true,
+      "norm": "l2",
+      "use_idf": true,
+      "smooth_idf": true,
+      "token_pattern": "(?u)\\b\\w\\w+\\b"
+    },
+    "classifier": {
+      "C": 1.0,
+      "class_weight": "balanced",
+      "solver": "lbfgs",
+      "l1_ratio": 0.0,
+      "fit_intercept": true,
+      "max_iter": 1000,
+      "tol": 1e-06
+    }
+  },
+  "primary_metric": {
+    "name": "macro_f1",
+    "value": 0.6993617572733752,
+    "direction": "higher_is_better",
+    "units": "unitless_0_to_1"
+  },
+  "pooled": {
+    "n": 521,
+    "macro_f1": 0.6993617572733752,
+    "accuracy": 0.8522072936660269,
+    "per_class_f1": {
+      "negative": 0.8106060606060606,
+      "neutral": 0.391304347826087,
+      "positive": 0.8961748633879781
+    },
+    "confusion_matrix": {
+      "labels": [
+        "negative",
+        "neutral",
+        "positive"
+      ],
+      "rows_true_cols_pred": [
+        [
+          107,
+          0,
+          38
+        ],
+        [
+          1,
+          9,
+          22
+        ],
+        [
+          11,
+          5,
+          328
+        ]
+      ]
+    }
+  },
+  "per_fold_macro_f1": {
+    "0": 0.6208569715419031,
+    "1": 0.6943602693602694,
+    "2": 0.7454270298723517,
+    "3": 0.7684684684684684,
+    "4": 0.6720017349815658
+  },
+  "per_fold_macro_f1_mean": 0.7002228948449116,
+  "per_fold_macro_f1_std": 0.05880184131073632,
+  "runtime_seconds": 0.7944267999992007,
+  "hardware": "CPU: AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
+  "outputs": {
+    "predictions": "C:\\Users\\John\\Documents\\GitHub\\CS271-Team4-ClassifyingSentiment\\evidence\\b1_logreg_predictions.csv",
+    "results": "C:\\Users\\John\\Documents\\GitHub\\CS271-Team4-ClassifyingSentiment\\evidence\\b1_logreg_metrics.json"
+  }
+}

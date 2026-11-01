@@ -76,3 +76,66 @@ Fresh clone, new virtual environment, `python run_all.py --remake-split --skip-b
 | `check_split.py` | `All split checks passed.` | |
 
 Rerun by: ______ on ______ (OS, Python version: ______).
+
+## 8. B1: baseline_logreg (2026-11-01)
+
+`baseline_logreg` uses scikit-learn TF-IDF and logistic regression with the
+saved development folds and shared evaluation metrics.
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe run_all.py --skip-b2
+```
+
+The commands above reproduce B1 and its checks. Each run writes
+`evidence/b1_logreg_predictions.csv` and `evidence/b1_logreg_metrics.json`,
+replacing the previous contents.
+
+| Field | Observed value |
+|---|---|
+| Baseline / run ID | baseline_logreg / baseline_logreg_20261101T231438867884Z |
+| Data version | kaggle-social-2026-10-30 |
+| Configuration | `configs/baseline_logreg.json`; one fixed configuration, no sweep |
+| Split seed / model randomness | 42 / none (L-BFGS) |
+| Evaluation count | 521 unique dev posts; all five saved folds |
+| Primary metric | Pooled macro-F1 **0.6993617572733752**, higher is better, unitless 0-1 |
+| Accuracy | 0.8522072936660269 |
+| Fold macro-F1 mean / sample SD | 0.7002228948449116 / 0.05880184131073632 |
+| Negative / neutral / positive F1 | 0.8106060606 / 0.3913043478 / 0.8961748634 |
+| Runtime | 0.8973 seconds, excluding imports and output writing |
+| Hardware | CPU: AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD |
+| Protected test outcomes | Zero test posts scored |
+
+[Metrics](b1_logreg_metrics.json) contain pooled
+and per-fold metrics, evaluation count, exact configuration, data/split identifiers,
+hardware, runtime, and output paths.
+[Predictions](b1_logreg_predictions.csv)
+contain ID, fold, correct label, and prediction for all 521 dev posts.
+
+The saved CSV was checked against all 521 development IDs and their saved folds,
+then rescored with the shared metrics. Every ID occurs once, and the recomputed
+metrics match the results file.
+
+The neutral slice remains a limitation: 9 of 32 neutral dev posts were correct;
+22 were classified positive and 1 negative.
+
+### B1 rerun
+
+Run `python run_all.py --skip-b2` or `python src/baseline_logreg.py` from the
+repository root. Expected: 521 dev predictions, pooled macro-F1 0.6993617573,
+accuracy 0.8522072937, and all five fits converged. A fresh teammate rerun remains
+pending. Record the teammate's name, date, environment, command, and observed
+results. Compare predictions by ID and explain differences.
+
+B1 reports use the shared `cv_report` format (`pooled` and per-fold fields). The
+shared loader reads the cleaned file and returns dev rows; only those returned
+rows are used for training and scoring.
+
+Current B1 reports retain the assignment's required runtime, hardware, run/data/split
+identifiers, configuration, evaluation count, metric definition, and output paths.
+File hashes, package-version dumps, and per-fold timing/iteration records were
+removed from the runner. Older B1 output files were removed; the links above
+point to the retained current run.
+
+The baseline name and run-ID prefix are `baseline_logreg`. The recorded run
+timestamp, predictions, scores, and runtime are preserved.
