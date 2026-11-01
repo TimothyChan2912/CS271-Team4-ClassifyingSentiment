@@ -1,0 +1,13 @@
+{
+  "data_version": "kaggle-social-2026-10-30",
+  "split": "splits/split.csv", "partition": "dev",
+  "split_seed": 42,
+  "n_folds": 5,
+  "tfidf": {
+    "ngram_range": [1, 2], "min_df": 1, "sublinear_tf": true,
+    "lowercase": true, "norm": "l2", "use_idf": true, "smooth_idf": true,
+    "token_pattern": "(?u)\\b\\w\\w+\\b"
+  },
+  "classifier": {"C": 1.0, "class_weight": "balanced", "solver": "lbfgs",
+                 "l1_ratio": 0.0, "fit_intercept": true, "max_iter": 1000, "tol": 0.000001}
+}

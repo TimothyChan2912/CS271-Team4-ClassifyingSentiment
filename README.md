@@ -64,3 +64,25 @@ Run everything from the repository root.
 | B2: TweetEval RoBERTa, zero-shot | `python src/baseline_tweeteval.py` | `evidence/b2_tweeteval_metrics.json`, `evidence/b2_tweeteval_predictions.csv` |
 
 All baselines score the dev partition only, load data through `src/data_io.py` (test rows are removed before any text is read), and compute metrics through `src/metrics.py`. The protocol is in `PROTOCOL.md`; expected values for every evidence file are in `evidence/EVIDENCE_RECORD.md`.
+
+
+## B1 implementation and reproduction
+
+The B1 entry point listed above, `src/baseline_logreg.py`, runs the scikit-learn
+TF-IDF/logistic-regression baseline. It uses the existing `load_dev` and
+`cv_report` functions. `python run_all.py --skip-b2` runs data preparation,
+split checks, and B1. B1 was also verified with Python 3.13.7 on Windows.
+
+Run the focused checks with `python -m unittest discover -s tests -v`.
+The fixed settings are in `configs/baseline_logreg.json`.
+A fresh pipeline is fitted on four dev folds and scored on the fifth for each
+of the five saved folds. A convergence warning stops the run.
+
+B1 writes directly to `evidence/`, producing `b1_logreg_predictions.csv`
+(521 held-out dev predictions) and `b1_logreg_metrics.json` (shared
+pooled/per-fold metrics, evaluation count, configuration, data/split identifiers,
+runtime, CPU information, and output paths). Each run replaces these two files,
+matching B2's output layout. Reports use B2's `pooled` and `per_fold_macro_f1*` fields.
+
+Loader clarification: `load_dev` reads the cleaned Parquet file internally,
+then returns the dev rows. Only those returned rows enter B1 training and scoring.
