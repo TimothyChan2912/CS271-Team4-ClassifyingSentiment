@@ -38,4 +38,6 @@ if __name__ == "__main__":
         print("\n(src/baseline_logreg.py not found yet; skipping B1)")
     if not args.skip_b2:
         run("src/baseline_tweeteval.py")
+    run("src/collect_results.py")
+    run("src/error_slice.py")
     print("\nAll steps finished. Evidence files are in evidence/.")

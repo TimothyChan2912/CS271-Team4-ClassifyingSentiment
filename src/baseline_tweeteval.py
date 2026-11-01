@@ -11,7 +11,7 @@ Usage (from the repo root):
     python src/baseline_tweeteval.py
     python src/baseline_tweeteval.py --preprocess   # model-card preprocessing; NOT in protocol v1
 """
-import argparse, json, os, platform, sys
+import argparse, json, os, platform, subprocess, sys, time
 
 import numpy as np
 
@@ -86,6 +86,18 @@ def predict(texts, batch_size, device_arg, revision):
     return np.concatenate(probs), info
 
 
+def hardware():
+    """Short hardware description for the results row."""
+    cpu = platform.processor() or platform.machine()
+    if sys.platform == "darwin":
+        try:
+            cpu = subprocess.run(["sysctl", "-n", "machdep.cpu.brand_string"],
+                                 capture_output=True, text=True).stdout.strip() or cpu
+        except Exception:
+            pass
+    return f"{platform.system()} {platform.release()}, {cpu}"
+
+
 def main(argv=None, predict_fn=predict):
     ap = argparse.ArgumentParser()
     ap.add_argument("--batch-size", type=int, default=32)
@@ -101,7 +113,9 @@ def main(argv=None, predict_fn=predict):
     if args.preprocess:
         texts = [model_card_preprocess(t) for t in texts]
 
+    t0 = time.perf_counter()
     probs, info = predict_fn(texts, args.batch_size, args.device, args.revision)
+    runtime = time.perf_counter() - t0
     assert probs.shape == (len(dev), 3)
 
     dev["y_true"] = dev["sentiment"]
@@ -113,7 +127,8 @@ def main(argv=None, predict_fn=predict):
     report["binary_pos_neg_vs_B0"] = binary_pos_neg_accuracy(dev["y_true"], probs)
     report["config"] = {"id": "B2", "max_length": MAX_LENGTH, "truncation": True,
                         "zero_shot": True, "preprocess": args.preprocess,
-                        "partition": "dev", "test_exposure": "none", **info}
+                        "partition": "dev", "test_exposure": "none", "seed": "n/a (zero-shot, deterministic)",
+                        "runtime_seconds": round(runtime, 1), "hardware": hardware(), **info}
 
     suffix = "_preprocessed" if args.preprocess else ""
     os.makedirs("evidence", exist_ok=True)
