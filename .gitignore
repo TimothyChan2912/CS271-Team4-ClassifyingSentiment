@@ -16,3 +16,7 @@ data/processed/*
 # Python cache
 __pycache__/
 *.pyc
+# Notebooks and local outputs
+.ipynb_checkpoints/
+outputs/
+checkpoints/
