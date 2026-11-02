@@ -1,0 +1,225 @@
+\documentclass[sigconf,nonacm]{acmart}
+\usepackage{float}
+\usepackage{placeins}
+
+\emergencystretch=1em
+\settopmatter{printfolios=true}
+\setcopyright{none}
+
+\title{Classifying Sentiment in Social Media Posts Using Text and Emojis}
+
+\author{Timothy Chan}
+\affiliation{%
+  \institution{San Jose State University}
+  \city{San Jose}
+  \state{California}
+  \country{USA}}
+\email{timothy.chan@sjsu.edu}
+
+\author{John Brisebois}
+\affiliation{%
+  \institution{San Jose State University}
+  \city{San Jose}
+  \state{California}
+  \country{USA}}
+\email{john.brisebois@sjsu.edu}
+
+\author{Shivam Shelar}
+\affiliation{%
+  \institution{San Jose State University}
+  \city{San Jose}
+  \state{California}
+  \country{USA}}
+\email{shivam.shelar@sjsu.edu}
+
+% Repeat the author block for each team member.
+
+\begin{document}
+
+\begin{abstract}
+Identifying emotions in social media posts can assist social media companies, marketing analysts, and public relations managers in understanding the consensus public sentiment towards topics of public interest such as product releases or events. However, traditional text classifiers might struggle with classifying text evoking weaker or implicit emotions. This project proposes developing a machine learning model that will use text and emojis to classify social media posts into 3 sentiment categories: positive, negative, and neutral. This report covers the first stage: verified data, a frozen evaluation protocol, and two baselines evaluated using strictly development data. The data is obtained from the Social Media Sentiments Analysis Dataset from Kaggle and consists of 652 different posts. After cleaning, the data is split into testing (131 posts) and development (521 posts) subsets with the development being evaluated with stratified 5-fold cross-validation. The primary metric is macro-averaged F1. An TF-IDF logistic regression and pretrained TweetEval RoBERTa sentiment model are used as baseline models.
+\end{abstract}
+
+\keywords{machine learning, logistic regression, multiclass classification, sentiment analysis, RoBERTa, natural language processing}
+
+\maketitle
+
+\section{Problem and Significance}
+As social media continues to grow in influence, consumer opinions and perceptions are vital to business success. Social media platforms provide these businesses with a direct source of consumer sentiment, capturing reactions to product releases, event announcements, and other topics of public interest. Through these reactions, marketing analysts, social media companies, and public relations managers can gain insight on how their audiences respond to information and the overwhelming emotions expressed in online discourse. However, manually examining large numbers of posts is inefficient, making emotion classification automation a useful tool for large scale analysis on social media content.
+
+Traditional classification methods like logistic regression can observe and categorize text using patterns from training data. Still, identifying emotions is more intricate than simply associating specific words with specific feelings. The underlying sentiment of a post can depend on factors like context, phrasing, and emojis with the combination of all three being used to elicit a certain response. Furthermore, less obvious or conflicting expressions such as sarcasm may not be easily captured by simple word patterns. Sometimes, posts may express more than one emotion which poses a challenge to classification models receiving one label. 
+
+This project proposes developing a machine learning model that classifies social media posts into established emotional categories using text and emojis as inputs. The unit of observation will be a singular post, and the output will be one dominating emotional category. Several publicly available Kaggle datasets will be used for training and  examined for compatibility with the model. The proposed model will be compared against a logistic regression baseline using held-out data and logical success metrics. Naturally, success will be defined through classification accuracy and in some cases, its interpretation of complex and ambiguous sentiment. Initially, this project will focus on classifying individual posts and returning the correct emotion. Within feasibility, one important non-goal is to take the general emotion from metrics and generate a summary highlighting this.
+
+
+\section{Related Work and Current Practice}
+One of the datasets this project uses was used in a similar 2009 Stanford Study. ~\cite{go2009twitter}  This study was able to achieve 83\% accuracy through a logistic regression approach and 65\% accuracy with keyword matching.  Their maximum entropy model predicts whether a tweet is positive or negative based on word combinations that the model learns means one or the other.  Because of the advancements in natural language processors, a modern approach could fine tune a pretrained RoBERTa encoder with a classification layer matching the datasets' categories.  This should result in a much higher accuracy than the old study's 83\%.
+
+Tang et al ~\cite{tang2024emfsa} proposes EMFSA, which combines text, emojis, and topic features for three class sentiment classification of English text.  The model uses additional pretraining that prioritises sentiment bearing words and emojis, followed by cross attention to integrate the features.  EMFSA achieved higher accuracy than its selected baselines on three datasets containing emojis.  These results mean that we may want to investigate emoji information more closely in our project.  Also, its no-emoji version also replaces the enhanced encoder with BERT and removes the fusion module.  We can interpret that comparison as measuring several changes together, as its performance difference cannot be attributed solely to emoji removal.
+
+Finally, a study from this year~\cite{tran2026vigoemotions} introduced ViGoEmotions, containing over 20 thousand Vietnamese social media comments annotated for multilabel classification across 27 emotions.  Their development set results show that emoji descriptions outperform raw emojis for five of eight transformer models, while the rest performed better with raw emojis.  These findings suggest that the benefit of emoji representation depends on the model, so we may need to investigate this further.  While it deals with Vietnamese instead of English, ViGoEmotions can still provide methodological motivation for our preprocessing experiment.
+
+
+
+\section{Data and Task Formulation}
+
+\textbf{Source and version.} 
+This stage of the project used one of the 3 planned datasets: the Social Media Sentiments Analysis Dataset on Kaggle~\cite{parmar_social_media_sentiments}, retrieved October 30, 2026 from Kaggle, file \texttt{sentimentdataset.csv}, SHA-256 \texttt{725c6f7b\ldots c63b}, recorded in our configuration as data version \texttt{kaggle-social-2026-10-30}. The license for the dataset is CC0 1.0 Universal (Public Domain Dedication) meaning the datacan be freely accessed, reused, modified, and redistributed without needing copyright permission or attribution. Each row is one post with text, an emotion label, and columns containing metadata. The proposal's previous concern about privacy is limited in this dataset. While the posts are public, they contain no usernames or identifying metadata.
+
+\textbf{Target construction.}
+Each row represents a single social media post.  Each prediction assigns the label positive, negative, or neutral.  Each emotion is mapped to the most corresponding label of positive, negative, or neutral. For example, angry is standardized to negative. The mapping is displayed through a table in (\texttt{configs/emotion\_map.csv}, 191 labels). In the table, the mapping is as follows: clear positive emotions to positive, clear negative emotions to negative, and neutral to neutral. Furthermore, 20 labels with potential mixed connotations such as nostalgia, ambivalence, and bittersweet are excluded rather than forced into a category. Also, mappings were based off label names alone meaning mappings were done based on the group's perception of the label. Due to this, 19 of labels are marked as judgment calls. 
+
+\textbf{Cleaning and counts.}
+To clean the data, all text is stripped of surrounding whitespace. All posts are then normalized through setting all text to lowercase and removing URLs and @mentions. Table~\ref{tab:cleaning} gives the row count after each step and Table~\ref{tab:classes} the final classes. 
+
+\begin{table}[h]
+\caption{Rows after each cleaning step.}
+\label{tab:cleaning}
+\begin{tabular}{lr}
+\toprule
+Step & Rows \\
+\midrule
+Raw file & 732 \\
+After removing empty text & 732 \\
+After removing duplicates & 706 \\
+After excluding labels with no clear polarity & 652 \\
+\bottomrule
+\end{tabular}
+\end{table}
+ 
+\begin{table}[h]
+\caption{Final class counts (652 posts).}
+\label{tab:classes}
+\begin{tabular}{lrr}
+\toprule
+Class & Posts & Share \\
+\midrule
+Positive & 431 & 66.1\% \\
+Negative & 181 & 27.8\% \\
+Neutral & 40 & 6.1\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Inputs and label quality.} 
+At prediction time, the only information available to the models is the content of the post. This means that the emotional label is not available with the content being the only model input. As shown in the tables, positive posts heavily outnumber neutral posts causing the neutral class to be sensitive to mapping choices. Also, only 11 of the 652 posts used contain emojis which hinders emoji analysis for this dataset. As proposed, models tuned on data from a limited window may perform worse on posts from today.
+
+\section{Proposed Approach and Comparisons}
+All models predict the same three classes from the same preprocessed post text and are evaluated under the same protocol described in Section~5.
+ 
+\textbf{Reference baseline.} The 83\% accuracy reported by the 2009 Stanford study~\cite{go2009twitter} for positive-versus-negative classification. Our models' binary accuracy on positive and negative posts is compared against this figure to show how much modern methods improve on the original result.
+ 
+\textbf{Simple baseline.} Logistic regression on TF-IDF unigram and bigram features, with regularization strength tuned on the validation split. This reproduces the classical approach of the 2009 Stanford study~\cite{go2009twitter} on our data and sets the floor the other models must beat.
+ 
+\textbf{Strong literature comparison.} The pretrained TweetEval RoBERTa sentiment model~\cite{barbieri2020tweeteval}, applied without further training. It already predicts the same three classes, so it shows what an existing, tweet-specialized model achieves with no project-specific training.
+ 
+\textbf{Proposed method.} A pretrained RoBERTa encoder~\cite{liu2019roberta} fine-tuned with a classification layer on our training split. If training time becomes a constraint, the smaller DistilRoBERTa model is the fallback. Comparing this model with the strong comparison shows the value of fine-tuning on our data, and comparing it with the baseline shows the value of a pretrained transformer.
+ 
+\textbf{Planned ablation: emojis.} The baseline and the proposed model are each trained and evaluated in two conditions: with emojis removed, and with emojis kept and converted to short text descriptions so both TF-IDF and RoBERTa can process them consistently. This directly tests the project's premise that emojis carry sentiment information beyond the text.
+
+\section{Evaluation Plan}
+\label{sec:protocol}
+The protocol was frozen before any baseline was scored with the full text in \texttt{PROTOCOL.md}. Specifically, it is tagged as (\texttt{protocol-v1}). If there is an error that requires revision, earlier versions are preserved to fallback on. 
+
+\textbf{Split.}
+The split unit is the post. A stratified 20\% of posts are used to make a protected testing split that no model uses until the final comparison. The remaining 80\% is used  for the development split and divided into five stratified folds (about 104 each), with each fold used as the held-out validation set once. This replaces the original proposal's 80/10/10 split. The reason for this change is due to the limited amount of neutral posts, where the original split would only leave the validation and testing splits with 4 neutral posts each. As a result the neutral F1 score would be mostly noise. By shifting to the current approach, it allows for the testing split to have more neutral posts to reduce the noise of the neutral class. 
+
+\begin{table}[h]
+\caption{Partition sizes and class counts.}
+\label{tab:split}
+\begin{tabular}{lrrrr}
+\toprule
+Partition & Posts & Neg. & Neu. & Pos. \\
+\midrule
+Development & 521 & 145 & 32 & 344 \\
+Test & 131 & 36 & 8 & 87 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Partition roles.}
+The dataset is divided into two partitions: the testing partition and the development partition consisting of training and validations folds. The training folds are used to train the models where its parameters like weights and intercepts are fitted to minimize loss. The held-out validation fold is used to evaluate model performance and select the model configuration. The protected test partition is used for one final evaluation done when the pipeline is frozen. So far, only development data has been used meaning no testing partition data has had any influence. 
+
+\textbf{Metric and selection.}
+The primary metric that will be used to evaluate the model will be a macro-averaged F1 score, which will be calculated over the sentiment labels. The equation is: \[
+\text{Macro-F1} = \frac{1}{N}\sum_{i=1}^{N} F1_i\] where $N=3$ is the number of categories and $F1_i$ is the harmonic mean of precision and recall for category $i$. The 521 development posts are split into 5 folds and all predictions are pooled and then used to calculate macro-F1. From this, one macro-F1 score is calculated with each sentiment class having equal importance. Additionally, macro-F1 will be calculated for each fold to obtain the mean and standard deviation. In the current stage, each baseline uses one fixed configuration with no tuning. In the next stage, configurations will be chosen based on mean cross-validated macro-F1.
+
+\textbf{Information flow.}
+All learned preprocessing is fitted using only training data and then validated with the held-out data to prevent leakage. A boundary check is used to ensure the development and testing partitions share no post ID or text and that all five folds exist with each containing the three sentiement labels. The findings will be observed in the context of the dataset and are not definite assessments to confirm an author's emotional state.
+
+\section{Baseline Results}
+\label{sec:results}
+ 
+Table~\ref{tab:results} reports pooled out-of-fold results on the 521 development posts. Each row used all five folds (for B2, all development posts). Metrics, per-post predictions, runtime, and hardware are saved in \texttt{evidence/b1\_logreg\_metrics.json} and \texttt{evidence/b2\_tweeteval\_metrics.json}.
+ 
+\begin{table*}[t]
+\caption{Development results (higher is better; unitless, 0 to 1). F1 columns are per-class. Fold mean and SD use the five per-fold macro-F1 values.}
+\label{tab:results}
+\begin{tabular}{lcccccc}
+\toprule
+ID & Pooled macro-F1 & Fold mean $\pm$ SD & Accuracy & F1 negative & F1 neutral & F1 positive \\
+\midrule
+B1 & 0.699 & 0.700 $\pm$ 0.059 & 0.852 & 0.811 & 0.391 & 0.896 \\
+B2 & \tbd{} & \tbd{} & \tbd{} & \tbd{} & \tbd{} & \tbd{} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+B1's fold-level macro-F1 ranges from 0.621 to 0.768, so differences of a few hundredths between methods should be read against that spread, which is driven largely by the roughly six neutral posts in each fold. B1's performance comes mainly from the two larger classes (F1 0.811 negative, 0.896 positive), while neutral F1 is 0.391. Its confusion matrix is in Table~\ref{tab:confusion}. \tbd{Two to three sentences comparing B2 with B1 on macro-F1 and on the neutral class, in conditional language. 
+ 
+\begin{table}[h]
+\caption{B1 confusion matrix on development posts (rows true, columns predicted).}
+\label{tab:confusion}
+\begin{tabular}{lrrr}
+\toprule
+True $\backslash$ Pred. & Neg. & Neu. & Pos. \\
+\midrule
+Negative & 107 & 0 & 38 \\
+Neutral & 1 & 9 & 22 \\
+Positive & 11 & 5 & 328 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Risks Resources and Scope}
+The main risk of this project is that the model may struggle with cases with subtle emotional expressions, sarcasm, or posts conveying multiple emotions. Also, the model's performance will depend heavily on its compatibility with the Kaggle datasets. In particular, the label's scoring system must be consistent with the models output. For example, one dataset might classify sentiment using a scoring system from 1-10 with 1 indicating negative and 10 positive. In this case, the utility of the dataset would be limited since it does not directly identify specific emotions. Additionally, the dataset may contains biases which restrict the model's ability to generalize across different topics.
+
+The project will require publicly available social media datasets, a consistent Python environment, and Python machine learning libraries for processing text, model training, and evaluation. A logistic regression classifier will be used as the initial baseline against a more advanced classification model. We expect to have enough computational power to train and test the intended models, making dataset suitability and time as the the two primary constraints. Although the datasets are publicly available, they may still have specific licensing conditions or usage restrictions that need to be verified before use. Furthermore, the datasets may contain potentially sensitive information which will need to be removed from the project's findings.
+
+The minimum complete project will be building and training the baseline logistic regression model and an improved separate model on a suitable Kaggle dataset with defined emotional categories. Specifically, the model will be evaluated using held-out test data and its performance will be measured through the model's accuracy in predicting the classified emotions labeled in the dataset. With additional time, optional extensions to the project include testing on multiple datasets to compare results and transforming the model into a multi-label classifier, enabling it to classify posts as expressing multiple emotions. However, it should be stated that this project does not attempt to claim to know the true nature of an author's emotional state, or generalize for every platform. Rather, conclusions will be based off training from the limited set of datasets and be interpreted as estimates instead of definite predictions of the author's emotion.
+
+\section{Work Plan and Evidence Checkpoints}
+\textbf{Friday, October 23: baseline and evaluation protocol (Sprint~1).}
+\begin{itemize}
+\item \emph{Timothy Chan:} data pipeline that loads the datasets, removes duplicates, applies the label mapping, and saves the frozen 80/10/10 split.
+\item \emph{John Brisebois:} macro-F1 and diagnostic metric implementation; logistic regression baseline trained and scored on the validation split, including binary accuracy compared against the 83\% Stanford reference.
+\item \emph{Shivam Shelar:} pretrained TweetEval comparison scored on the validation split; repository structure and pinned environment so results can be reproduced with one command.
+\end{itemize}
+Evidence: a working pipeline, frozen split and evaluation plan, and a reproducible baseline result.
+ 
+\textbf{Tuesday, November 10: experiment and ablation check.}
+\begin{itemize}
+\item \emph{Shivam Shelar:} RoBERTa fine-tuning across three seeds, with validation results and saved checkpoints.
+\item \emph{Timothy Chan:} emoji ablation for the baseline and the fine-tuned model.
+\item \emph{John Brisebois:} per-dataset evaluation and error-slice tooling.
+\end{itemize}
+Evidence: the main experiment running end to end, with the emoji ablation checked on the validation split.
+ 
+\textbf{Tuesday, November 24: results and reproducibility check.}
+\begin{itemize}
+\item \emph{All:} pipeline frozen; single evaluation on the protected test set.
+\item \emph{John Brisebois:} error analysis and manual review of misclassified posts.
+\item \emph{Shivam Shelar:} draft results tables and figures.
+\item \emph{Timothy Chan:} README and repository verified by running it from a fresh environment.
+\end{itemize}
+Evidence: frozen preliminary results, draft figures and tables, error analysis, and a repository another person can run.
+ 
+\textbf{December 1 and 3: presentations.} Each member presents the components they owned.
+\section{Expected Contribution}
+This project aims to develop a machine learning model that classifies a social media post into a predefined emotional category with text and emojis as the inputs. If the results might show better performance than the baseline logistic regression model, the project will have evidence that the selected model is more effective and accurate at identifying emotions from text in the chosen dataset. With the same dataset and evaluation protocol, it will also have reproducible comparison of both models. If the developed model does not outperform the baseline, the results might still be useful in determining the shortcomings of the proposed approach and the pitfalls when it comes to classifying emotions from text. 
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{project_references}
+
+\end{document}
