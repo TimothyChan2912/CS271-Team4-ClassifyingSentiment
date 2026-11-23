@@ -14,9 +14,12 @@ from sklearn.pipeline import make_pipeline
 if __package__:
     from .data_io import load_dev
     from .metrics import cv_report
+    from .emoji_processing import (convert_emojis_to_text, remove_emojis)
+
 else:
     from data_io import load_dev
     from metrics import cv_report
+    from emoji_processing import (convert_emojis_to_text, remove_emojis)
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "configs/baseline_logreg.json"
@@ -28,7 +31,16 @@ def make_model(config):
     return make_pipeline(TfidfVectorizer(**tfidf), LogisticRegression(**config["classifier"]))
 
 
-def run_cv(dev, config):
+def run_cv(dev, config, emoji_mode="None"):
+    dev = dev.copy()
+
+    if emoji_mode == "described":
+        dev["text"] = dev.text.apply(convert_emojis_to_text)
+    elif emoji_mode == "removed":
+        dev["text"] = dev.text.apply(remove_emojis)
+    elif emoji_mode != "None":
+        raise ValueError(f"Unknown emoji_mode: {emoji_mode}")
+
     predictions = []
     with warnings.catch_warnings():
         warnings.simplefilter("error", ConvergenceWarning)
