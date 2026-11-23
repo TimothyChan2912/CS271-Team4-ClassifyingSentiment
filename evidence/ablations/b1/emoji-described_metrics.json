@@ -1,0 +1,93 @@
+{
+  "method_id": "B1-EMOJI-DESCRIBED",
+  "model": "TF-IDF + Logistic Regression",
+  "emoji_mode": "described",
+  "model_card_preprocessing": false,
+  "partition": "dev",
+  "cross_validation": "5-fold stratified",
+  "test_exposure": "none",
+  "config": {
+    "data_version": "kaggle-social-2026-10-30",
+    "split": "splits/split.csv",
+    "partition": "dev",
+    "split_seed": 42,
+    "n_folds": 5,
+    "tfidf": {
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 1,
+      "sublinear_tf": true,
+      "lowercase": true,
+      "norm": "l2",
+      "use_idf": true,
+      "smooth_idf": true,
+      "token_pattern": "(?u)\\b\\w\\w+\\b"
+    },
+    "classifier": {
+      "C": 1.0,
+      "class_weight": "balanced",
+      "solver": "lbfgs",
+      "l1_ratio": 0.0,
+      "fit_intercept": true,
+      "max_iter": 1000,
+      "tol": 1e-06
+    }
+  },
+  "primary_metric": {
+    "name": "macro_f1",
+    "value": 0.7027622748632298,
+    "direction": "higher_is_better",
+    "units": "unitless_0_to_1"
+  },
+  "pooled": {
+    "n": 521,
+    "macro_f1": 0.7027622748632298,
+    "accuracy": 0.8541266794625719,
+    "per_class_f1": {
+      "negative": 0.8106060606060606,
+      "neutral": 0.4,
+      "positive": 0.897680763983629
+    },
+    "confusion_matrix": {
+      "labels": [
+        "negative",
+        "neutral",
+        "positive"
+      ],
+      "rows_true_cols_pred": [
+        [
+          107,
+          0,
+          38
+        ],
+        [
+          1,
+          9,
+          22
+        ],
+        [
+          11,
+          4,
+          329
+        ]
+      ]
+    }
+  },
+  "per_fold_macro_f1": {
+    "0": 0.6208569715419031,
+    "1": 0.7154649947753396,
+    "2": 0.7454270298723517,
+    "3": 0.7684684684684684,
+    "4": 0.6720017349815658
+  },
+  "per_fold_macro_f1_mean": 0.7044438399279257,
+  "per_fold_macro_f1_std": 0.0590328203457173,
+  "runtime_seconds": 0.7041276000018115,
+  "hardware": "CPU: Intel64 Family 6 Model 165 Stepping 3, GenuineIntel",
+  "outputs": {
+    "predictions": "C:\\Users\\tchan\\Downloads\\Team04_BaslineProtocol_Source\\evidence\\ablations\\b1\\emoji-described_predictions.csv",
+    "metrics": "C:\\Users\\tchan\\Downloads\\Team04_BaslineProtocol_Source\\evidence\\ablations\\b1\\emoji-described_metrics.json"
+  }
+}
