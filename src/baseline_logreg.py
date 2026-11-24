@@ -13,12 +13,12 @@ from sklearn.pipeline import make_pipeline
 
 if __package__:
     from .data_io import load_dev
-    from .metrics import cv_report
+    from .metrics import LABELS, binary_pos_neg_accuracy, cv_report
     from .emoji_processing import (convert_emojis_to_text, remove_emojis)
 
 else:
     from data_io import load_dev
-    from metrics import cv_report
+    from metrics import LABELS, binary_pos_neg_accuracy, cv_report
     from emoji_processing import (convert_emojis_to_text, remove_emojis)
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,11 +51,19 @@ def run_cv(dev, config, emoji_mode="None"):
                 columns={"sentiment": "y_true"}
             ).copy()
             rows["y_pred"] = model.predict(validation.text)
+            probabilities = model.predict_proba(validation.text)
+            class_indices = {label: i for i, label in enumerate(model.classes_)}
+            for label in LABELS:
+                rows[f"p_{label}"] = probabilities[:, class_indices[label]]
             predictions.append(rows)
     oof = pd.concat(predictions).sort_values("id")
     if not oof.id.is_unique or set(oof.id) != set(dev.id):
         raise ValueError("Expected exactly one held-out prediction per development ID.")
-    return oof, cv_report(oof)
+    report = cv_report(oof)
+    report["binary_pos_neg_vs_B0"] = binary_pos_neg_accuracy(
+        oof["y_true"], oof[[f"p_{label}" for label in LABELS]].to_numpy()
+    )
+    return oof, report
 
 
 def main():
@@ -81,6 +89,9 @@ def main():
         json.dumps(results, indent=2, allow_nan=False) + "\n", encoding="utf-8"
     )
     print(f"Pooled macro-F1: {pooled['macro_f1']:.6f}; accuracy: {pooled['accuracy']:.6f}")
+    binary = report["binary_pos_neg_vs_B0"]
+    print(f"Positive-vs-negative accuracy: {binary['accuracy']:.6f} "
+          f"(n={binary['n']}; B0 context only)")
     print(f"Saved {len(oof)} dev predictions to {output.resolve()}")
 
 

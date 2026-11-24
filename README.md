@@ -79,10 +79,19 @@ A fresh pipeline is fitted on four dev folds and scored on the fifth for each
 of the five saved folds. A convergence warning stops the run.
 
 B1 writes directly to `evidence/`, producing `b1_logreg_predictions.csv`
-(521 held-out dev predictions) and `b1_logreg_metrics.json` (shared
+(521 held-out dev predictions with `p_negative`, `p_neutral`, and `p_positive`)
+and `b1_logreg_metrics.json` (shared
 pooled/per-fold metrics, evaluation count, configuration, data/split identifiers,
 runtime, CPU information, and output paths). Each run replaces these two files,
 matching B2's output layout. Reports use B2's `pooled` and `per_fold_macro_f1*` fields.
+
+The additional `binary_pos_neg_vs_B0` diagnostic uses the same shared scorer as
+B2. It excludes true-neutral posts, compares the positive and negative
+probabilities (ties predict negative), and reports accuracy over 489 development
+posts. The three-class predictions and primary macro-F1 remain unchanged.
+The Stanford 83% result is historical context on different data, not a directly
+comparable benchmark. `python src/baseline_logreg.py` regenerates the predictions,
+probabilities, and metrics from the five saved development folds.
 
 Loader clarification: `load_dev` reads the cleaned Parquet file internally,
 then returns the dev rows. Only those returned rows enter B1 training and scoring.

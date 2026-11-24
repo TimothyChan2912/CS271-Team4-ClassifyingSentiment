@@ -1,6 +1,6 @@
 {
   "baseline_id": "baseline_logreg",
-  "run_id": "baseline_logreg_20261122T235019692668Z",
+  "run_id": "baseline_logreg_20261124T025415368472Z",
   "config": {
     "data_version": "kaggle-social-2026-10-30",
     "split": "splits/split.csv",
@@ -79,10 +79,14 @@
   },
   "per_fold_macro_f1_mean": 0.7002228948449116,
   "per_fold_macro_f1_std": 0.05880184131073632,
-  "runtime_seconds": 0.7220263999988674,
-  "hardware": "CPU: Intel64 Family 6 Model 165 Stepping 3, GenuineIntel",
+  "binary_pos_neg_vs_B0": {
+    "n": 489,
+    "accuracy": 0.8997955010224948
+  },
+  "runtime_seconds": 1.9206709000000046,
+  "hardware": "CPU: AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
   "outputs": {
-    "predictions": "C:\\Users\\tchan\\Downloads\\Team04_BaslineProtocol_Source\\evidence\\b1_logreg_predictions.csv",
-    "results": "C:\\Users\\tchan\\Downloads\\Team04_BaslineProtocol_Source\\evidence\\b1_logreg_metrics.json"
+    "predictions": "C:\\Users\\John\\Documents\\GitHub\\CS271-Team4-ClassifyingSentiment\\evidence\\b1_logreg_predictions.csv",
+    "results": "C:\\Users\\John\\Documents\\GitHub\\CS271-Team4-ClassifyingSentiment\\evidence\\b1_logreg_metrics.json"
   }
 }
