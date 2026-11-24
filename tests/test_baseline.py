@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import mock_open, patch
 
+import numpy as np
 import pandas as pd
 from sklearn.exceptions import ConvergenceWarning
 
@@ -44,6 +45,47 @@ class BaselineTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             score(["positive"], [])
 
+    def test_binary_metric_excludes_neutral_and_compares_polarity_scores(self):
+        result = binary_pos_neg_accuracy(
+            ["positive", "negative", "neutral", "negative", "positive"],
+            [[0.10, 0.65, 0.25],  # positive wins even though neutral is largest
+             [0.25, 0.65, 0.10],  # negative wins even though neutral is largest
+             [0.90, 0.00, 0.10],  # true-neutral row is excluded
+             [0.20, 0.60, 0.20],  # polarity tie resolves to negative
+             [0.60, 0.10, 0.30]],  # incorrect negative prediction
+        )
+        self.assertEqual(result, {"n": 4, "accuracy": 3 / 4})
+
+    def test_b1_probabilities_follow_class_names_and_post_ids(self):
+        class FixedModel:
+            classes_ = ["positive", "negative", "neutral"]
+
+            def fit(self, texts, labels):
+                return self
+
+            def predict(self, texts):
+                return ["neutral"] * len(texts)
+
+            def predict_proba(self, texts):
+                scores = {"negative": [0.10, 0.25, 0.65],
+                          "neutral": [0.10, 0.10, 0.80],
+                          "positive": [0.25, 0.10, 0.65]}
+                return np.array([scores[text.split()[0]] for text in texts])
+
+        dev = self.load().sample(frac=1, random_state=42)
+        with patch("src.baseline_logreg.make_model", side_effect=lambda _: FixedModel()):
+            predictions, report = run_cv(dev, self.config)
+        expected = {"negative": [0.25, 0.65, 0.10],
+                    "neutral": [0.10, 0.80, 0.10],
+                    "positive": [0.10, 0.65, 0.25]}
+        columns = [f"p_{label}" for label in LABELS]
+        self.assertEqual(predictions.id.tolist(), sorted(dev.id))
+        for label, probabilities in expected.items():
+            rows = predictions[predictions.y_true == label]
+            np.testing.assert_allclose(rows[columns], [probabilities] * len(rows))
+        self.assertTrue(predictions.y_pred.eq("neutral").all())
+        self.assertEqual(report["binary_pos_neg_vs_B0"], {"n": 10, "accuracy": 1.0})
+
     def test_oof_coverage_and_training_only_vocabulary(self):
         dev, models = self.load(), []
 
@@ -59,6 +101,10 @@ class BaselineTests(unittest.TestCase):
         self.assertTrue(predictions.id.is_unique)
         self.assertEqual(set(predictions.id), set(dev.id))
         self.assertEqual(report["pooled"]["n"], 15)
+        self.assertEqual(report["binary_pos_neg_vs_B0"]["n"], 10)
+        probabilities = predictions[[f"p_{label}" for label in LABELS]].to_numpy()
+        self.assertTrue(((probabilities >= 0) & (probabilities <= 1)).all())
+        np.testing.assert_allclose(probabilities.sum(axis=1), 1.0)
         self.assertEqual(set(predictions.fold), set(range(5)))
         for fold, model in enumerate(models):
             self.assertNotIn(f"fold{fold}only", model[0].vocabulary_)
@@ -82,14 +128,16 @@ class BaselineTests(unittest.TestCase):
         self.assertNotIn("protected", set(dev.id))
         self.assertEqual(set(dev.sentiment), set(LABELS))
 
-    def test_shared_scorer_preserves_recorded_b2_results(self):
-        predictions = pd.read_csv(ROOT / "evidence/b2_tweeteval_predictions.csv")
-        expected = json.loads((ROOT / "evidence/b2_tweeteval_metrics.json").read_text())
-        report = cv_report(predictions)
-        self.assertEqual(json.loads(json.dumps(report)), {key: expected[key] for key in report})
-        probabilities = predictions[[f"p_{label}" for label in LABELS]].to_numpy()
-        self.assertEqual(binary_pos_neg_accuracy(predictions.y_true, probabilities),
-                         expected["binary_pos_neg_vs_B0"])
+    def test_shared_scorer_preserves_recorded_baseline_results(self):
+        for baseline in ["b1_logreg", "b2_tweeteval"]:
+            with self.subTest(baseline=baseline):
+                predictions = pd.read_csv(ROOT / f"evidence/{baseline}_predictions.csv")
+                expected = json.loads((ROOT / f"evidence/{baseline}_metrics.json").read_text())
+                report = cv_report(predictions)
+                self.assertEqual(json.loads(json.dumps(report)), {key: expected[key] for key in report})
+                probabilities = predictions[[f"p_{label}" for label in LABELS]].to_numpy()
+                self.assertEqual(binary_pos_neg_accuracy(predictions.y_true, probabilities),
+                                 expected["binary_pos_neg_vs_B0"])
 
     def test_run_all_invokes_b1_and_optional_b2(self):
         for options in [[], ["--skip-b2"]]:
