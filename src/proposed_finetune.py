@@ -124,6 +124,7 @@ def train_model(texts, labels, cfg, lr, seed, device):
     gen = torch.Generator().manual_seed(seed)
     log = []
     for epoch in range(cfg["epochs"]):
+        epoch_started = perf_counter()
         order = torch.randperm(n, generator=gen).tolist()
         total = 0.0
         for start in range(0, n, bs):
@@ -139,6 +140,8 @@ def train_model(texts, labels, cfg, lr, seed, device):
             sched.step()
             total += loss.item() * len(idx)
         log.append({"epoch": epoch + 1, "train_loss": round(total / n, 5)})
+        print(f"  epoch {epoch + 1}/{cfg['epochs']}: loss={total / n:.5f}, "
+              f"{perf_counter() - epoch_started:.1f}s", flush=True)
     model.eval()
     return tok, model, log
 
@@ -172,6 +175,8 @@ def run_cv(dev, cfg, lr, seed, emoji_mode, device, train_fn=train_model, predict
     dev["text"] = dev["text"].map(EMOJI[emoji_mode])
     parts, logs = [], {}
     for fold in range(cfg["n_folds"]):
+        print(f"P-{emoji_mode}, lr={lr:g}, seed={seed}, "
+              f"fold {fold + 1}/{cfg['n_folds']}", flush=True)
         train, held = dev[dev.fold != fold], dev[dev.fold == fold]
         tok, model, log = train_fn(train.text.tolist(), train.sentiment.tolist(), cfg, lr, seed, device)
         parts.append(prediction_frame(held, predict_fn(tok, model, held.text.tolist(), cfg, device)))

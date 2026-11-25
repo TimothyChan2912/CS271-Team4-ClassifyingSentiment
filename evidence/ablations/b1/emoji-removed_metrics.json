@@ -84,10 +84,14 @@
   },
   "per_fold_macro_f1_mean": 0.7002228948449116,
   "per_fold_macro_f1_std": 0.05880184131073632,
-  "runtime_seconds": 0.666662700001325,
-  "hardware": "CPU: Intel64 Family 6 Model 165 Stepping 3, GenuineIntel",
+  "binary_pos_neg_vs_B0": {
+    "n": 489,
+    "accuracy": 0.8997955010224948
+  },
+  "runtime_seconds": 1.075138500000321,
+  "hardware": "CPU: AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
   "outputs": {
-    "predictions": "C:\\Users\\tchan\\Downloads\\Team04_BaslineProtocol_Source\\evidence\\ablations\\b1\\emoji-removed_predictions.csv",
-    "metrics": "C:\\Users\\tchan\\Downloads\\Team04_BaslineProtocol_Source\\evidence\\ablations\\b1\\emoji-removed_metrics.json"
+    "predictions": "C:\\Users\\John\\Documents\\GitHub\\CS271-Team4-ClassifyingSentiment\\evidence\\ablations\\b1\\emoji-removed_predictions.csv",
+    "metrics": "C:\\Users\\John\\Documents\\GitHub\\CS271-Team4-ClassifyingSentiment\\evidence\\ablations\\b1\\emoji-removed_metrics.json"
   }
 }

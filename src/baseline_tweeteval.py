@@ -11,12 +11,16 @@ Usage (from the repo root):
     python src/baseline_tweeteval.py
     python src/baseline_tweeteval.py --preprocess   # model-card preprocessing; NOT in protocol v1
 """
-import argparse, json, os, platform, sys
+import argparse, json, os, platform, re, sys
 
 import numpy as np
 
-from data_io import load_dev
-from metrics import LABELS, binary_pos_neg_accuracy, cv_report
+if __package__:
+    from .data_io import load_dev
+    from .metrics import LABELS, binary_pos_neg_accuracy, cv_report
+else:
+    from data_io import load_dev
+    from metrics import LABELS, binary_pos_neg_accuracy, cv_report
 
 MODEL = "cardiffnlp/twitter-roberta-base-sentiment"
 MAX_LENGTH = 128
@@ -46,6 +50,8 @@ def pick_device(torch, requested):
 
 def resolve_commit(revision):
     """Exact Hugging Face commit of the model, so reruns can pin it with --revision."""
+    if re.fullmatch(r"[0-9a-fA-F]{40}", revision):
+        return revision
     try:
         from huggingface_hub import HfApi
         return HfApi().model_info(MODEL, revision=revision).sha

@@ -49,7 +49,7 @@
   "config": {
     "id": "B2-EMOJI-REMOVED",
     "model": "cardiffnlp/twitter-roberta-base-sentiment",
-    "revision_requested": "main",
+    "revision_requested": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
     "max_length": 128,
     "truncation": true,
     "zero_shot": true,
@@ -59,19 +59,19 @@
     "partition": "dev",
     "cross_validation": "5-fold reporting",
     "test_exposure": "none",
-    "model_commit": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
-    "device": "cpu",
+    "model_commit": null,
+    "device": "cuda",
     "posts_truncated_at_128_tokens": 0,
     "versions": {
-      "python": "3.13.14",
-      "torch": "2.15.0+cpu",
+      "python": "3.13.7",
+      "torch": "2.15.0+cu134",
       "transformers": "5.22.1"
     }
   },
-  "runtime_seconds": 15.772080499998992,
-  "hardware": "CPU: Intel64 Family 6 Model 165 Stepping 3, GenuineIntel",
+  "runtime_seconds": 1.0227505000002566,
+  "hardware": "CPU: AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
   "outputs": {
-    "predictions": "C:\\Users\\tchan\\Downloads\\Team04_BaslineProtocol_Source\\evidence\\ablations\\b2\\emoji-removed_predictions.csv",
-    "metrics": "C:\\Users\\tchan\\Downloads\\Team04_BaslineProtocol_Source\\evidence\\ablations\\b2\\emoji-removed_metrics.json"
+    "predictions": "C:\\Users\\John\\Documents\\GitHub\\CS271-Team4-ClassifyingSentiment\\evidence\\ablations\\b2\\emoji-removed_predictions.csv",
+    "metrics": "C:\\Users\\John\\Documents\\GitHub\\CS271-Team4-ClassifyingSentiment\\evidence\\ablations\\b2\\emoji-removed_metrics.json"
   }
 }

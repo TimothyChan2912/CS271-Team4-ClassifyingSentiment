@@ -3,8 +3,11 @@
     python -m unittest tests.test_proposed
 """
 import os
+import json
+import sys
+from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import numpy as np
 import pandas as pd
@@ -21,6 +24,23 @@ def fake_dev():
 
 
 class ProposedTests(unittest.TestCase):
+    def test_exact_model_revision_resolves_without_network(self):
+        from src.baseline_tweeteval import resolve_commit
+        revision = "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f"
+        with patch.dict(sys.modules, {"huggingface_hub": None}):
+            self.assertEqual(resolve_commit(revision), revision)
+
+    def test_final_b2_retains_requested_revision_when_commit_metadata_is_missing(self):
+        from src.final_eval import run_b2
+        revision = "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f"
+        predict = Mock(return_value=(np.array([[0.1, 0.1, 0.8]]), {}))
+        metadata = {"config": {"model_commit": None, "revision_requested": revision}}
+        with patch.dict(sys.modules, {"src.baseline_tweeteval": SimpleNamespace(predict=predict)}), \
+                patch("src.final_eval.Path.read_text", return_value=json.dumps(metadata)), \
+                patch("src.final_eval.save"):
+            run_b2(pd.DataFrame({"text": ["A pleasant day"]}), "cpu")
+        predict.assert_called_once_with(["A pleasant day"], 32, "cpu", revision)
+
     def test_test_partition_is_locked_without_final_eval(self):
         with patch.dict(os.environ, {}, clear=True):
             with self.assertRaises(RuntimeError):

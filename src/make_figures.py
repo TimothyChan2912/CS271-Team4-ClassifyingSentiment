@@ -79,7 +79,7 @@ def fig2():
     methods = [m for m in COLORS if m in reports]
     width = 0.8 / len(methods)
     x = np.arange(len(LABELS))
-    fig, ax = plt.subplots(figsize=(3.4, 2.4))
+    fig, ax = plt.subplots(figsize=(3.4, 2.7))
     for k, m in enumerate(methods):
         vals = np.array([[r["pooled"]["per_class_f1"][lab] for lab in LABELS] for r in reports[m]])
         mean = vals.mean(axis=0)
@@ -92,7 +92,7 @@ def fig2():
     ax.set_xticks(x, ["Negative\n(n=145)", "Neutral\n(n=32)", "Positive\n(n=344)"])
     ax.set_ylabel("Dev F1, out-of-fold (0 to 1)", fontsize=8, color=INK)
     ax.set_ylim(0, 1.05)
-    ax.legend(fontsize=6.5, frameon=False, ncol=2, loc="upper center", bbox_to_anchor=(0.5, 1.22))
+    ax.legend(fontsize=6.5, frameon=False, ncol=2, loc="lower center", bbox_to_anchor=(0.5, 1.02))
     style(ax)
     fig.tight_layout()
     return fig

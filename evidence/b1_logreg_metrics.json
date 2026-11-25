@@ -1,6 +1,6 @@
 {
   "baseline_id": "baseline_logreg",
-  "run_id": "baseline_logreg_20261124T025415368472Z",
+  "run_id": "baseline_logreg_20261125T065755722653Z",
   "config": {
     "data_version": "kaggle-social-2026-10-30",
     "split": "splits/split.csv",
@@ -83,7 +83,7 @@
     "n": 489,
     "accuracy": 0.8997955010224948
   },
-  "runtime_seconds": 1.9206709000000046,
+  "runtime_seconds": 1.2138628999982757,
   "hardware": "CPU: AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
   "outputs": {
     "predictions": "C:\\Users\\John\\Documents\\GitHub\\CS271-Team4-ClassifyingSentiment\\evidence\\b1_logreg_predictions.csv",

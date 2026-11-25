@@ -1,0 +1,51 @@
+{
+  "method_id": "B2",
+  "trained_on": "nothing (zero-shot)",
+  "model": "cardiffnlp/twitter-roberta-base-sentiment",
+  "revision_requested": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
+  "model_commit": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
+  "device": "cuda",
+  "posts_truncated_at_128_tokens": 0,
+  "versions": {
+    "python": "3.13.7",
+    "torch": "2.15.0+cu134",
+    "transformers": "5.22.1"
+  },
+  "partition": "test",
+  "n": 131,
+  "macro_f1": 0.6839752266108855,
+  "accuracy": 0.8396946564885496,
+  "per_class_f1": {
+    "negative": 0.8253968253968254,
+    "neutral": 0.2962962962962963,
+    "positive": 0.9302325581395349
+  },
+  "confusion_matrix": {
+    "labels": [
+      "negative",
+      "neutral",
+      "positive"
+    ],
+    "rows_true_cols_pred": [
+      [
+        26,
+        9,
+        1
+      ],
+      [
+        0,
+        4,
+        4
+      ],
+      [
+        1,
+        6,
+        80
+      ]
+    ]
+  },
+  "binary_pos_neg_vs_B0": {
+    "n": 123,
+    "accuracy": 0.9512195121951219
+  }
+}
