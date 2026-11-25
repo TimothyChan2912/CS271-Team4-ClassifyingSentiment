@@ -1,0 +1,54 @@
+{
+  "learning_rate": 3e-05,
+  "full_method_emoji_mode": "raw",
+  "conditions": {
+    "raw": {
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "mean_cv_macro_f1": 0.7865396426528575,
+      "sd_across_seeds": 0.025099346915870086,
+      "mean_fold_sd": 0.06228478840255048,
+      "pooled_macro_f1_mean": 0.7860955546241563,
+      "per_class_f1_mean": {
+        "negative": 0.9471371882086168,
+        "neutral": 0.46050903119868636,
+        "positive": 0.9506404444651654
+      }
+    },
+    "removed": {
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "mean_cv_macro_f1": 0.7848081607072928,
+      "sd_across_seeds": 0.026300404457611098,
+      "mean_fold_sd": 0.06054957239239961,
+      "pooled_macro_f1_mean": 0.7840367136748574,
+      "per_class_f1_mean": {
+        "negative": 0.9470129375951294,
+        "neutral": 0.4554129576815602,
+        "positive": 0.9496842457478828
+      }
+    },
+    "described": {
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "mean_cv_macro_f1": 0.7836824202682173,
+      "sd_across_seeds": 0.029101083998214643,
+      "mean_fold_sd": 0.06482607989146615,
+      "pooled_macro_f1_mean": 0.781120865438011,
+      "per_class_f1_mean": {
+        "negative": 0.9482129313613955,
+        "neutral": 0.4454655513977548,
+        "positive": 0.9496841135548825
+      }
+    }
+  }
+}

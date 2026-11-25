@@ -1,0 +1,98 @@
+{
+  "method_id": "P-raw",
+  "run_id": "P_raw_seed43",
+  "seed": 43,
+  "learning_rate": 3e-05,
+  "emoji_mode": "raw",
+  "trained_on": "all 521 dev posts",
+  "config": {
+    "model_name": "cardiffnlp/twitter-roberta-base-sentiment",
+    "revision": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
+    "max_length": 128,
+    "batch_size": 16,
+    "epochs": 4,
+    "learning_rates": [
+      1e-05,
+      2e-05,
+      3e-05
+    ],
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "max_grad_norm": 1.0,
+    "class_weight": "balanced",
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "n_folds": 5,
+    "emoji_mode": "raw",
+    "ablation_emoji_modes": [
+      "removed",
+      "described"
+    ],
+    "tie_tolerance": 0.005
+  },
+  "train_log": [
+    {
+      "epoch": 1,
+      "train_loss": 0.58649
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.4782
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.13705
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.04424
+    }
+  ],
+  "train_seconds": 26.3,
+  "hardware": "Darwin 27.2.0, Apple M5, device=mps",
+  "versions": {
+    "python": "3.14.8",
+    "torch": "2.15.0",
+    "transformers": "5.22.1"
+  },
+  "partition": "test",
+  "n": 131,
+  "macro_f1": 0.8675018271086707,
+  "accuracy": 0.9389312977099237,
+  "per_class_f1": {
+    "negative": 0.9315068493150684,
+    "neutral": 0.7058823529411765,
+    "positive": 0.9651162790697675
+  },
+  "confusion_matrix": {
+    "labels": [
+      "negative",
+      "neutral",
+      "positive"
+    ],
+    "rows_true_cols_pred": [
+      [
+        34,
+        1,
+        1
+      ],
+      [
+        1,
+        6,
+        1
+      ],
+      [
+        2,
+        2,
+        83
+      ]
+    ]
+  },
+  "binary_pos_neg_vs_B0": {
+    "n": 123,
+    "accuracy": 0.967479674796748
+  }
+}

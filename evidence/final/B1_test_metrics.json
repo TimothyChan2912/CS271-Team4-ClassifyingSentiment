@@ -1,0 +1,70 @@
+{
+  "method_id": "B1",
+  "trained_on": "all 521 dev posts",
+  "config": {
+    "data_version": "kaggle-social-2026-10-30",
+    "split": "splits/split.csv",
+    "partition": "dev",
+    "split_seed": 42,
+    "n_folds": 5,
+    "tfidf": {
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 1,
+      "sublinear_tf": true,
+      "lowercase": true,
+      "norm": "l2",
+      "use_idf": true,
+      "smooth_idf": true,
+      "token_pattern": "(?u)\\b\\w\\w+\\b"
+    },
+    "classifier": {
+      "C": 1.0,
+      "class_weight": "balanced",
+      "solver": "lbfgs",
+      "l1_ratio": 0.0,
+      "fit_intercept": true,
+      "max_iter": 1000,
+      "tol": 1e-06
+    }
+  },
+  "partition": "test",
+  "n": 131,
+  "macro_f1": 0.726891746246585,
+  "accuracy": 0.8931297709923665,
+  "per_class_f1": {
+    "negative": 0.8923076923076924,
+    "neutral": 0.36363636363636365,
+    "positive": 0.9247311827956989
+  },
+  "confusion_matrix": {
+    "labels": [
+      "negative",
+      "neutral",
+      "positive"
+    ],
+    "rows_true_cols_pred": [
+      [
+        29,
+        0,
+        7
+      ],
+      [
+        0,
+        2,
+        6
+      ],
+      [
+        0,
+        1,
+        86
+      ]
+    ]
+  },
+  "binary_pos_neg_vs_B0": {
+    "n": 123,
+    "accuracy": 0.943089430894309
+  }
+}

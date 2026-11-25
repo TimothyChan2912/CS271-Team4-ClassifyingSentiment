@@ -60,18 +60,18 @@
     "cross_validation": "5-fold reporting",
     "test_exposure": "none",
     "model_commit": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
-    "device": "cpu",
+    "device": "mps",
     "posts_truncated_at_128_tokens": 0,
     "versions": {
-      "python": "3.13.14",
-      "torch": "2.15.0+cpu",
+      "python": "3.14.8",
+      "torch": "2.15.0",
       "transformers": "5.22.1"
     }
   },
-  "runtime_seconds": 15.772080499998992,
-  "hardware": "CPU: Intel64 Family 6 Model 165 Stepping 3, GenuineIntel",
+  "runtime_seconds": 1.8906232909939718,
+  "hardware": "CPU: arm",
   "outputs": {
-    "predictions": "C:\\Users\\tchan\\Downloads\\Team04_BaslineProtocol_Source\\evidence\\ablations\\b2\\emoji-removed_predictions.csv",
-    "metrics": "C:\\Users\\tchan\\Downloads\\Team04_BaslineProtocol_Source\\evidence\\ablations\\b2\\emoji-removed_metrics.json"
+    "predictions": "/Users/shivamshelar/Desktop/CS271-Team4-ClassifyingSentiment/evidence/ablations/b2/emoji-removed_predictions.csv",
+    "metrics": "/Users/shivamshelar/Desktop/CS271-Team4-ClassifyingSentiment/evidence/ablations/b2/emoji-removed_metrics.json"
   }
 }

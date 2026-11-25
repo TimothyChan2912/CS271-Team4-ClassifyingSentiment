@@ -1,0 +1,56 @@
+{
+  "selection_rule": "highest mean CV macro-F1 (mean over seeds of per-fold mean); ties within 0.005 broken by lower mean fold SD",
+  "emoji_mode": "raw",
+  "grid": {
+    "1e-05": {
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "mean_cv_macro_f1": 0.7375431131684649,
+      "sd_across_seeds": 0.0168590487081869,
+      "mean_fold_sd": 0.04254123002206395,
+      "pooled_macro_f1_mean": 0.7369057309187412,
+      "per_class_f1_mean": {
+        "negative": 0.9403623424184314,
+        "neutral": 0.32748171368861023,
+        "positive": 0.9428731366491822
+      }
+    },
+    "2e-05": {
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "mean_cv_macro_f1": 0.7720548607139627,
+      "sd_across_seeds": 0.02375842091475128,
+      "mean_fold_sd": 0.06257449394697473,
+      "pooled_macro_f1_mean": 0.7727417889896588,
+      "per_class_f1_mean": {
+        "negative": 0.9460417947075003,
+        "neutral": 0.42053281351526967,
+        "positive": 0.951650758746207
+      }
+    },
+    "3e-05": {
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "mean_cv_macro_f1": 0.7865396426528575,
+      "sd_across_seeds": 0.025099346915870086,
+      "mean_fold_sd": 0.06228478840255048,
+      "pooled_macro_f1_mean": 0.7860955546241563,
+      "per_class_f1_mean": {
+        "negative": 0.9471371882086168,
+        "neutral": 0.46050903119868636,
+        "positive": 0.9506404444651654
+      }
+    }
+  },
+  "selected_learning_rate": 3e-05,
+  "test_exposure": "none"
+}

@@ -1,0 +1,183 @@
+{
+  "method_id": "P-raw",
+  "run_id": "P_raw_lr3e-05_seed43",
+  "partition": "dev",
+  "test_exposure": "none",
+  "learning_rate": 3e-05,
+  "seed": 43,
+  "emoji_mode": "raw",
+  "config": {
+    "model_name": "cardiffnlp/twitter-roberta-base-sentiment",
+    "revision": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
+    "max_length": 128,
+    "batch_size": 16,
+    "epochs": 4,
+    "learning_rates": [
+      1e-05,
+      2e-05,
+      3e-05
+    ],
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "max_grad_norm": 1.0,
+    "class_weight": "balanced",
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "n_folds": 5,
+    "emoji_mode": "raw",
+    "ablation_emoji_modes": [
+      "removed",
+      "described"
+    ],
+    "tie_tolerance": 0.005
+  },
+  "pooled": {
+    "n": 521,
+    "macro_f1": 0.7640623926338211,
+    "accuracy": 0.9174664107485605,
+    "per_class_f1": {
+      "negative": 0.9455782312925171,
+      "neutral": 0.4,
+      "positive": 0.9466089466089466
+    },
+    "confusion_matrix": {
+      "labels": [
+        "negative",
+        "neutral",
+        "positive"
+      ],
+      "rows_true_cols_pred": [
+        [
+          139,
+          2,
+          4
+        ],
+        [
+          4,
+          11,
+          17
+        ],
+        [
+          6,
+          10,
+          328
+        ]
+      ]
+    }
+  },
+  "per_fold_macro_f1": {
+    "0": 0.6757957335291619,
+    "1": 0.7247863247863249,
+    "2": 0.8287726358148894,
+    "3": 0.7389733198243836,
+    "4": 0.8342632737561665
+  },
+  "per_fold_macro_f1_mean": 0.7605182575421853,
+  "per_fold_macro_f1_std": 0.06894898295962083,
+  "binary_pos_neg_vs_B0": {
+    "n": 489,
+    "accuracy": 0.9734151329243353
+  },
+  "train_log": {
+    "0": [
+      {
+        "epoch": 1,
+        "train_loss": 0.56442
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.28099
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.085
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.02773
+      }
+    ],
+    "1": [
+      {
+        "epoch": 1,
+        "train_loss": 0.56234
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.45997
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.15726
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.0907
+      }
+    ],
+    "2": [
+      {
+        "epoch": 1,
+        "train_loss": 0.72921
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.4421
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.12782
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.05605
+      }
+    ],
+    "3": [
+      {
+        "epoch": 1,
+        "train_loss": 0.6666
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.31318
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.15451
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.10865
+      }
+    ],
+    "4": [
+      {
+        "epoch": 1,
+        "train_loss": 0.99394
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.76615
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.35764
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.14436
+      }
+    ]
+  },
+  "runtime_seconds": 108.7,
+  "hardware": "Darwin 27.2.0, Apple M5, device=mps",
+  "versions": {
+    "python": "3.14.8",
+    "torch": "2.15.0",
+    "transformers": "5.22.1"
+  }
+}

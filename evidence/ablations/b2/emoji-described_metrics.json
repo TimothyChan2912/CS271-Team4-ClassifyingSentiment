@@ -36,12 +36,12 @@
   "per_fold_macro_f1": {
     "0": 0.687843130022071,
     "1": 0.6711344211344211,
-    "2": 0.7159734797593318,
-    "3": 0.6972988025619604,
+    "2": 0.7285766158315178,
+    "3": 0.6859816780372888,
     "4": 0.6110988254951103
   },
-  "per_fold_macro_f1_mean": 0.6766697317945789,
-  "per_fold_macro_f1_std": 0.040079207233273476,
+  "per_fold_macro_f1_mean": 0.6769269341040818,
+  "per_fold_macro_f1_std": 0.04253156014390826,
   "binary_pos_neg_vs_B0": {
     "n": 489,
     "accuracy": 0.9754601226993865
@@ -60,18 +60,18 @@
     "cross_validation": "5-fold reporting",
     "test_exposure": "none",
     "model_commit": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
-    "device": "cpu",
+    "device": "mps",
     "posts_truncated_at_128_tokens": 0,
     "versions": {
-      "python": "3.13.14",
-      "torch": "2.15.0+cpu",
+      "python": "3.14.8",
+      "torch": "2.15.0",
       "transformers": "5.22.1"
     }
   },
-  "runtime_seconds": 27.699901500000124,
-  "hardware": "CPU: Intel64 Family 6 Model 165 Stepping 3, GenuineIntel",
+  "runtime_seconds": 3.8064390829968033,
+  "hardware": "CPU: arm",
   "outputs": {
-    "predictions": "C:\\Users\\tchan\\Downloads\\Team04_BaslineProtocol_Source\\evidence\\ablations\\b2\\emoji-described_predictions.csv",
-    "metrics": "C:\\Users\\tchan\\Downloads\\Team04_BaslineProtocol_Source\\evidence\\ablations\\b2\\emoji-described_metrics.json"
+    "predictions": "/Users/shivamshelar/Desktop/CS271-Team4-ClassifyingSentiment/evidence/ablations/b2/emoji-described_predictions.csv",
+    "metrics": "/Users/shivamshelar/Desktop/CS271-Team4-ClassifyingSentiment/evidence/ablations/b2/emoji-described_metrics.json"
   }
 }
