@@ -1,0 +1,6 @@
+method,role,n_test,n_seeds,macro_f1,seed_sd,ci95_low,ci95_high,accuracy,f1_negative,f1_neutral,f1_positive,binary_pos_neg_accuracy
+B1,simple baseline (TF-IDF + logistic regression),131,1,0.7269,0.0,0.5902,0.8498,0.8931,0.8923,0.3636,0.9247,0.9431
+B2,zero-shot TweetEval RoBERTa = P without fine-tuning,131,1,0.684,0.0,0.59,0.7825,0.8397,0.8254,0.2963,0.9302,0.9512
+P-raw,"proposed: fine-tuned RoBERTa, emojis kept",131,3,0.8931,0.0191,0.7827,0.9649,0.9542,0.9544,0.752,0.973,0.981
+P-removed,ablation: P with emojis removed,131,3,0.895,0.0184,0.7827,0.9644,0.9517,0.9454,0.7686,0.9711,0.9756
+P-described,ablation: P with emojis as text,131,3,0.8909,0.0159,0.7791,0.9632,0.9517,0.9496,0.752,0.9711,0.9783

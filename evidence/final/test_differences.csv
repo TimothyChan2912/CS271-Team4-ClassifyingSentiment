@@ -1,0 +1,5 @@
+comparison,macro_f1_difference,ci95_low,ci95_high,share_of_resamples_above_zero
+P-raw minus B1,0.1662,0.0283,0.3117,0.988
+P-raw minus B2,0.2091,0.0532,0.3392,0.996
+P-raw minus P-removed,-0.0019,-0.0197,0.009,0.42
+P-raw minus P-described,0.0022,0.0,0.0074,0.64

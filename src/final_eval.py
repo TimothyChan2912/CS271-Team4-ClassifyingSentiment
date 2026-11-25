@@ -75,7 +75,8 @@ def run_b2(test, device):
     else:
         from baseline_tweeteval import predict
     b2 = json.loads((ROOT / "evidence" / "b2_tweeteval_metrics.json").read_text())
-    revision = b2["config"].get("model_commit") or "main"
+    revision = (b2["config"].get("model_commit")
+                or b2["config"].get("revision_requested") or "main")
     probs, info = predict(test.text.tolist(), 32, device, revision)
     save("B2", test, probs, {"method_id": "B2", "trained_on": "nothing (zero-shot)", **info})
 

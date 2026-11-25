@@ -1,0 +1,110 @@
+{
+  "error_bars": "95% bootstrap over test posts, 2000 resamples, seed 0; seed_sd is the SD of macro-F1 across training seeds",
+  "results": [
+    {
+      "method": "B1",
+      "role": "simple baseline (TF-IDF + logistic regression)",
+      "n_test": 131,
+      "n_seeds": 1,
+      "macro_f1": 0.7269,
+      "seed_sd": 0.0,
+      "ci95_low": 0.5902,
+      "ci95_high": 0.8498,
+      "accuracy": 0.8931,
+      "f1_negative": 0.8923,
+      "f1_neutral": 0.3636,
+      "f1_positive": 0.9247,
+      "binary_pos_neg_accuracy": 0.9431
+    },
+    {
+      "method": "B2",
+      "role": "zero-shot TweetEval RoBERTa = P without fine-tuning",
+      "n_test": 131,
+      "n_seeds": 1,
+      "macro_f1": 0.684,
+      "seed_sd": 0.0,
+      "ci95_low": 0.59,
+      "ci95_high": 0.7825,
+      "accuracy": 0.8397,
+      "f1_negative": 0.8254,
+      "f1_neutral": 0.2963,
+      "f1_positive": 0.9302,
+      "binary_pos_neg_accuracy": 0.9512
+    },
+    {
+      "method": "P-raw",
+      "role": "proposed: fine-tuned RoBERTa, emojis kept",
+      "n_test": 131,
+      "n_seeds": 3,
+      "macro_f1": 0.8931,
+      "seed_sd": 0.0191,
+      "ci95_low": 0.7827,
+      "ci95_high": 0.9649,
+      "accuracy": 0.9542,
+      "f1_negative": 0.9544,
+      "f1_neutral": 0.752,
+      "f1_positive": 0.973,
+      "binary_pos_neg_accuracy": 0.981
+    },
+    {
+      "method": "P-removed",
+      "role": "ablation: P with emojis removed",
+      "n_test": 131,
+      "n_seeds": 3,
+      "macro_f1": 0.895,
+      "seed_sd": 0.0184,
+      "ci95_low": 0.7827,
+      "ci95_high": 0.9644,
+      "accuracy": 0.9517,
+      "f1_negative": 0.9454,
+      "f1_neutral": 0.7686,
+      "f1_positive": 0.9711,
+      "binary_pos_neg_accuracy": 0.9756
+    },
+    {
+      "method": "P-described",
+      "role": "ablation: P with emojis as text",
+      "n_test": 131,
+      "n_seeds": 3,
+      "macro_f1": 0.8909,
+      "seed_sd": 0.0159,
+      "ci95_low": 0.7791,
+      "ci95_high": 0.9632,
+      "accuracy": 0.9517,
+      "f1_negative": 0.9496,
+      "f1_neutral": 0.752,
+      "f1_positive": 0.9711,
+      "binary_pos_neg_accuracy": 0.9783
+    }
+  ],
+  "paired_differences": [
+    {
+      "comparison": "P-raw minus B1",
+      "macro_f1_difference": 0.1662,
+      "ci95_low": 0.0283,
+      "ci95_high": 0.3117,
+      "share_of_resamples_above_zero": 0.988
+    },
+    {
+      "comparison": "P-raw minus B2",
+      "macro_f1_difference": 0.2091,
+      "ci95_low": 0.0532,
+      "ci95_high": 0.3392,
+      "share_of_resamples_above_zero": 0.996
+    },
+    {
+      "comparison": "P-raw minus P-removed",
+      "macro_f1_difference": -0.0019,
+      "ci95_low": -0.0197,
+      "ci95_high": 0.009,
+      "share_of_resamples_above_zero": 0.42
+    },
+    {
+      "comparison": "P-raw minus P-described",
+      "macro_f1_difference": 0.0022,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0074,
+      "share_of_resamples_above_zero": 0.64
+    }
+  ]
+}

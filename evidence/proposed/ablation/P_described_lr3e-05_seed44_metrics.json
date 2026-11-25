@@ -1,0 +1,183 @@
+{
+  "method_id": "P-described",
+  "run_id": "P_described_lr3e-05_seed44",
+  "partition": "dev",
+  "test_exposure": "none",
+  "learning_rate": 3e-05,
+  "seed": 44,
+  "emoji_mode": "described",
+  "config": {
+    "model_name": "cardiffnlp/twitter-roberta-base-sentiment",
+    "revision": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
+    "max_length": 128,
+    "batch_size": 16,
+    "epochs": 4,
+    "learning_rates": [
+      1e-05,
+      2e-05,
+      3e-05
+    ],
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "max_grad_norm": 1.0,
+    "class_weight": "balanced",
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "n_folds": 5,
+    "emoji_mode": "raw",
+    "ablation_emoji_modes": [
+      "removed",
+      "described"
+    ],
+    "tie_tolerance": 0.005
+  },
+  "pooled": {
+    "n": 521,
+    "macro_f1": 0.7879686979686978,
+    "accuracy": 0.9232245681381958,
+    "per_class_f1": {
+      "negative": 0.951048951048951,
+      "neutral": 0.4642857142857143,
+      "positive": 0.9485714285714286
+    },
+    "confusion_matrix": {
+      "labels": [
+        "negative",
+        "neutral",
+        "positive"
+      ],
+      "rows_true_cols_pred": [
+        [
+          136,
+          3,
+          6
+        ],
+        [
+          1,
+          13,
+          18
+        ],
+        [
+          4,
+          8,
+          332
+        ]
+      ]
+    }
+  },
+  "per_fold_macro_f1": {
+    "0": 0.7314009661835749,
+    "1": 0.847899702216249,
+    "2": 0.7781144781144782,
+    "3": 0.8126984126984128,
+    "4": 0.7697592575290416
+  },
+  "per_fold_macro_f1_mean": 0.7879745633483514,
+  "per_fold_macro_f1_std": 0.044248959134916326,
+  "binary_pos_neg_vs_B0": {
+    "n": 489,
+    "accuracy": 0.9713701431492843
+  },
+  "train_log": {
+    "0": [
+      {
+        "epoch": 1,
+        "train_loss": 0.54782
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.2546
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.08052
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.0123
+      }
+    ],
+    "1": [
+      {
+        "epoch": 1,
+        "train_loss": 0.63272
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.36467
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.12995
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.03546
+      }
+    ],
+    "2": [
+      {
+        "epoch": 1,
+        "train_loss": 0.61114
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.30466
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.0929
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.02836
+      }
+    ],
+    "3": [
+      {
+        "epoch": 1,
+        "train_loss": 0.56556
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.35262
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.20744
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.06912
+      }
+    ],
+    "4": [
+      {
+        "epoch": 1,
+        "train_loss": 0.60069
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.26906
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.10837
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.03141
+      }
+    ]
+  },
+  "runtime_seconds": 35.6,
+  "hardware": "Windows 11, AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD, device=cuda",
+  "versions": {
+    "python": "3.13.7",
+    "torch": "2.15.0+cu134",
+    "transformers": "5.22.1"
+  }
+}
