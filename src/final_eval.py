@@ -5,7 +5,7 @@ Run only after every setting is chosen on development data:
     FINAL_EVAL=1 python src/final_eval.py                # B1, B2, then the combined table
     python src/final_eval.py --aggregate-only            # rebuild the table from saved predictions
 
-B1 is refit on all 521 development posts with its frozen configuration. B2 is the
+B1 is refit on all development posts with its fixed configuration. B2 is the
 same zero-shot checkpoint as before. Results go to evidence/final/.
 
 Error bars: 95% bootstrap intervals over test posts (2,000 resamples, seed 0).
@@ -26,20 +26,27 @@ from sklearn.metrics import f1_score
 
 if __package__:
     from .data_io import load_dev, load_test
-    from .metrics import LABELS, binary_pos_neg_accuracy, score
+    from .emoji_processing import convert_emojis_to_text, remove_emojis
+    from .metrics import LABELS, align_predictions, binary_pos_neg_accuracy, score
 else:
     from data_io import load_dev, load_test
-    from metrics import LABELS, binary_pos_neg_accuracy, score
+    from emoji_processing import convert_emojis_to_text, remove_emojis
+    from metrics import LABELS, align_predictions, binary_pos_neg_accuracy, score
 
 ROOT = Path(__file__).resolve().parents[1]
 FINAL = ROOT / "evidence" / "final"
 N_BOOT, BOOT_SEED = 2000, 0
 ROLES = {"B1": "simple baseline (TF-IDF + logistic regression)",
+         "B1-removed": "B1 with emojis removed",
+         "B1-described": "B1 with emojis as text",
          "B2": "zero-shot TweetEval RoBERTa = P without fine-tuning",
+         "B2-removed": "B2 with emojis removed",
+         "B2-described": "B2 with emojis as text",
          "P-raw": "proposed: fine-tuned RoBERTa, emojis kept",
          "P-removed": "ablation: P with emojis removed",
          "P-described": "ablation: P with emojis as text"}
 COMPARISONS = [("P-raw", "B1"), ("P-raw", "B2"), ("P-raw", "P-removed"), ("P-raw", "P-described")]
+EMOJI = {"raw": lambda text: text, "removed": remove_emojis, "described": convert_emojis_to_text}
 
 
 def save(name, test, probs, meta):
@@ -56,20 +63,22 @@ def save(name, test, probs, meta):
     print(f"{name}: test macro-F1 {result['macro_f1']:.4f} | accuracy {result['accuracy']:.4f}")
 
 
-def run_b1(dev, test):
+def run_b1(dev, test, emoji_mode="raw"):
     if __package__:
         from .baseline_logreg import CONFIG, make_model
     else:
         from baseline_logreg import CONFIG, make_model
     config = json.loads(CONFIG.read_text())
-    model = make_model(config).fit(dev.text, dev.sentiment)
-    probs = model.predict_proba(test.text)
+    transform = EMOJI[emoji_mode]
+    model = make_model(config).fit(dev.text.map(transform), dev.sentiment)
+    probs = model.predict_proba(test.text.map(transform))
     order = [list(model.classes_).index(lab) for lab in LABELS]
-    save("B1", test, probs[:, order], {"method_id": "B1", "trained_on": "all 521 dev posts",
-                                        "config": config})
+    name = "B1" if emoji_mode == "raw" else f"B1_{emoji_mode}"
+    save(name, test, probs[:, order], {"method_id": name.replace("_", "-"), "emoji_mode": emoji_mode,
+                                     "trained_on": f"all {len(dev)} dev posts", "config": config})
 
 
-def run_b2(test, device):
+def run_b2(test, device, emoji_mode="raw"):
     if __package__:
         from .baseline_tweeteval import predict
     else:
@@ -77,22 +86,35 @@ def run_b2(test, device):
     b2 = json.loads((ROOT / "evidence" / "b2_tweeteval_metrics.json").read_text())
     revision = (b2["config"].get("model_commit")
                 or b2["config"].get("revision_requested") or "main")
-    probs, info = predict(test.text.tolist(), 32, device, revision)
-    save("B2", test, probs, {"method_id": "B2", "trained_on": "nothing (zero-shot)", **info})
+    probs, info = predict(test.text.map(EMOJI[emoji_mode]).tolist(), 32, device, revision)
+    name = "B2" if emoji_mode == "raw" else f"B2_{emoji_mode}"
+    save(name, test, probs, {"method_id": name.replace("_", "-"), "emoji_mode": emoji_mode,
+                            "trained_on": "nothing (zero-shot)", **info})
 
 
-def load_runs():
+def load_runs(methods=None, test=None):
     """{method_id: [prediction frames, one per seed]} from evidence/final/."""
     runs = {}
     for path in sorted(FINAL.glob("*_test_predictions.csv")):
         stem = path.name.replace("_test_predictions.csv", "")
         if stem in ("B1", "B2"):
             method = stem
+        elif re.fullmatch(r"B[12]_(removed|described)", stem):
+            method = stem.replace("_", "-")
         elif m := re.fullmatch(r"P_(raw|removed|described)_seed\d+", stem):
             method = f"P-{m.group(1)}"
         else:
             continue  # e.g. checkpoint re-evaluations, reported separately
-        runs.setdefault(method, []).append(pd.read_csv(path).sort_values("id").reset_index(drop=True))
+        if methods is not None and method not in methods:
+            continue
+        frame = pd.read_csv(path).sort_values("id").reset_index(drop=True)
+        if test is None:
+            test = frame[["id", "y_true"]].rename(columns={"y_true": "sentiment"})
+        try:
+            frame = align_predictions(frame, test)
+        except ValueError as exc:
+            raise ValueError(f"{path}: {exc}") from exc
+        runs.setdefault(method, []).append(frame)
     return runs
 
 
@@ -104,8 +126,8 @@ def mean_f1(frames, idx=None):
     return float(np.mean(vals))
 
 
-def aggregate():
-    runs = load_runs()
+def aggregate(methods=None, test=None):
+    runs = load_runs(methods=methods, test=test)
     assert runs, "no test predictions in evidence/final/"
     n = len(next(iter(runs.values()))[0])
     rng = np.random.default_rng(BOOT_SEED)
@@ -158,12 +180,16 @@ def main(argv=None):
     ap.add_argument("--skip-b2", action="store_true")
     ap.add_argument("--device", default="auto")
     args = ap.parse_args(argv)
+    methods = [method for method in ROLES if not (args.skip_b2 and method.startswith("B2"))]
+    test = None
     if not args.aggregate_only:
         test = load_test()  # raises unless FINAL_EVAL=1
-        run_b1(load_dev(), test)
-        if not args.skip_b2:
-            run_b2(test, args.device)
-    return aggregate()
+        dev = load_dev()
+        for mode in EMOJI:
+            run_b1(dev, test, mode)
+            if not args.skip_b2:
+                run_b2(test, args.device, mode)
+    return aggregate(methods=methods, test=test)
 
 
 if __name__ == "__main__":

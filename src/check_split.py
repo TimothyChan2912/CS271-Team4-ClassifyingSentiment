@@ -2,14 +2,7 @@
 import pandas as pd
 
 from make_split import build_split
-
-
-def normalize(s):
-    # must match the duplicate-detection rule in data_cleaning.py
-    return (s.str.lower()
-            .str.replace(r"http\S+|www\.\S+", "", regex=True)
-            .str.replace(r"@\w+", "", regex=True)
-            .str.replace(r"\s+", " ", regex=True).str.strip())
+from data_cleaning import normalize_text
 
 
 df = pd.read_parquet("data/processed/clean.parquet")
@@ -24,7 +17,7 @@ assert set(dev["fold"]) == {0, 1, 2, 3, 4}, "folds missing"
 assert (test["fold"] == -1).all(), "test posts must have fold -1"
 # no text shared between dev and test, exact or after duplicate normalization
 assert set(dev["text"]).isdisjoint(test["text"]), "identical text in dev and test"
-assert set(normalize(dev["text"])).isdisjoint(normalize(test["text"])), \
+assert set(normalize_text(dev["text"])).isdisjoint(normalize_text(test["text"])), \
     "near-duplicate (normalized) text in dev and test"
 # every fold has all three classes
 for k, g in dev.groupby("fold"):
@@ -33,5 +26,5 @@ for k, g in dev.groupby("fold"):
 rebuilt, _ = build_split(df)
 rebuilt = rebuilt[["id", "partition", "fold"]].sort_values("id").reset_index(drop=True)
 saved = sp.sort_values("id").reset_index(drop=True)
-assert rebuilt.equals(saved), "rebuilt split differs from splits/split.csv"
+pd.testing.assert_frame_equal(rebuilt, saved, check_dtype=False, obj="saved split")
 print("All split checks passed.")

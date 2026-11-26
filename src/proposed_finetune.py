@@ -33,10 +33,12 @@ if __package__:
     from .data_io import load_dev, load_test
     from .emoji_processing import convert_emojis_to_text, remove_emojis
     from .metrics import LABELS, binary_pos_neg_accuracy, cv_report, score
+    from .training_progress import TrainingProgress, training_run_counts
 else:
     from data_io import load_dev, load_test
     from emoji_processing import convert_emojis_to_text, remove_emojis
     from metrics import LABELS, binary_pos_neg_accuracy, cv_report, score
+    from training_progress import TrainingProgress, training_run_counts
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "configs" / "proposed_finetune.json"
@@ -169,14 +171,17 @@ def prediction_frame(frame, probs, fold=None):
 
 
 # ------------------------------------------------------------------- CV run
-def run_cv(dev, cfg, lr, seed, emoji_mode, device, train_fn=train_model, predict_fn=predict_probs):
+def run_cv(dev, cfg, lr, seed, emoji_mode, device, train_fn=train_model, predict_fn=predict_probs,
+           progress=None):
     """Out-of-fold predictions over all dev folds for one (lr, seed, emoji mode)."""
     dev = dev.copy()
     dev["text"] = dev["text"].map(EMOJI[emoji_mode])
     parts, logs = [], {}
+    if progress is None:
+        progress = TrainingProgress(cfg["n_folds"])
     for fold in range(cfg["n_folds"]):
-        print(f"P-{emoji_mode}, lr={lr:g}, seed={seed}, "
-              f"fold {fold + 1}/{cfg['n_folds']}", flush=True)
+        progress.start(f"P-{emoji_mode}, lr={lr:g}, seed={seed}, "
+                       f"fold {fold + 1}/{cfg['n_folds']}")
         train, held = dev[dev.fold != fold], dev[dev.fold == fold]
         tok, model, log = train_fn(train.text.tolist(), train.sentiment.tolist(), cfg, lr, seed, device)
         parts.append(prediction_frame(held, predict_fn(tok, model, held.text.tolist(), cfg, device)))
@@ -238,9 +243,11 @@ def cmd_cv(cfg, args, device, **fns):
     dev = load_dev()
     lrs = args.lrs or cfg["learning_rates"]
     seeds = args.seeds or cfg["seeds"]
+    progress = TrainingProgress(training_run_counts(cfg, lrs=lrs, seeds=seeds)["cv"])
     grid = {}
     for lr in lrs:
-        runs = [run_and_save(dev, cfg, lr, s, cfg["emoji_mode"], device, "cv", **fns) for s in seeds]
+        runs = [run_and_save(dev, cfg, lr, s, cfg["emoji_mode"], device, "cv",
+                             progress=progress, **fns) for s in seeds]
         grid[f"{lr:g}"] = summarize(runs)
     chosen = select(grid, cfg["tie_tolerance"])
     summary = {"selection_rule": "highest mean CV macro-F1 (mean over seeds of per-fold mean); "
@@ -264,12 +271,15 @@ def selected_lr():
 def cmd_ablation(cfg, args, device, **fns):
     dev, lr = load_dev(), selected_lr()
     seeds = args.seeds or cfg["seeds"]
+    modes = args.modes or cfg["ablation_emoji_modes"]
+    progress = TrainingProgress(training_run_counts(cfg, seeds=seeds, modes=modes)["ablation"])
     summary = {"learning_rate": lr, "full_method_emoji_mode": cfg["emoji_mode"], "conditions": {}}
     full = [json.loads((OUT / "cv" / f"P_{cfg['emoji_mode']}_lr{lr:g}_seed{s}_metrics.json").read_text())
             for s in seeds]
     summary["conditions"][cfg["emoji_mode"]] = summarize(full)
-    for mode in args.modes or cfg["ablation_emoji_modes"]:
-        runs = [run_and_save(dev, cfg, lr, s, mode, device, "ablation", **fns) for s in seeds]
+    for mode in modes:
+        runs = [run_and_save(dev, cfg, lr, s, mode, device, "ablation",
+                             progress=progress, **fns) for s in seeds]
         summary["conditions"][mode] = summarize(runs)
     (OUT / "ablation_summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps({m: round(s["mean_cv_macro_f1"], 4) for m, s in summary["conditions"].items()}))
@@ -292,8 +302,11 @@ def cmd_final(cfg, args, device, train_fn=train_model, predict_fn=predict_probs)
     test = load_test()  # raises unless FINAL_EVAL=1
     dev, lr = load_dev(), selected_lr()
     seeds = args.seeds or cfg["seeds"]
-    for mode in [cfg["emoji_mode"], *(args.modes or cfg["ablation_emoji_modes"])]:
+    modes = args.modes or cfg["ablation_emoji_modes"]
+    progress = TrainingProgress(training_run_counts(cfg, seeds=seeds, modes=modes)["final"])
+    for mode in [cfg["emoji_mode"], *modes]:
         for seed in seeds:
+            progress.start(f"P-{mode}, lr={lr:g}, seed={seed}, final training on all dev posts")
             started = perf_counter()
             tok, model, log = train_fn(dev.text.map(EMOJI[mode]).tolist(), dev.sentiment.tolist(),
                                        cfg, lr, seed, device)
@@ -302,7 +315,7 @@ def cmd_final(cfg, args, device, train_fn=train_model, predict_fn=predict_probs)
             name = f"P_{mode}_seed{seed}"
             score_test(test, probs, {"method_id": f"P-{mode}", "run_id": name, "seed": seed,
                                      "learning_rate": lr, "emoji_mode": mode,
-                                     "trained_on": "all 521 dev posts", "config": cfg,
+                                     "trained_on": f"all {len(dev)} dev posts", "config": cfg,
                                      "train_log": log, "train_seconds": round(train_time, 1),
                                      "hardware": hardware(device), "versions": versions()}, name)
             if mode == cfg["emoji_mode"] and seed == seeds[0] and hasattr(model, "save_pretrained"):

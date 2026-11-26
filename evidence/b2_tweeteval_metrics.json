@@ -1,12 +1,12 @@
 {
   "pooled": {
-    "n": 521,
-    "macro_f1": 0.6783432477291128,
-    "accuracy": 0.8195777351247601,
+    "n": 798,
+    "macro_f1": 0.6820481158680445,
+    "accuracy": 0.6779448621553885,
     "per_class_f1": {
-      "negative": 0.8897338403041825,
-      "neutral": 0.25,
-      "positive": 0.8952959028831563
+      "negative": 0.7022900763358778,
+      "neutral": 0.6184873949579832,
+      "positive": 0.7253668763102725
     },
     "confusion_matrix": {
       "labels": [
@@ -16,35 +16,35 @@
       ],
       "rows_true_cols_pred": [
         [
-          117,
+          184,
+          79,
+          5
+        ],
+        [
+          47,
+          184,
+          42
+        ],
+        [
           25,
-          3
-        ],
-        [
-          0,
-          15,
-          17
-        ],
-        [
-          1,
-          48,
-          295
+          59,
+          173
         ]
       ]
     }
   },
   "per_fold_macro_f1": {
-    "0": 0.687843130022071,
-    "1": 0.6775676649818526,
-    "2": 0.7285766158315178,
-    "3": 0.6859816780372888,
-    "4": 0.6110988254951103
+    "0": 0.6613810756012591,
+    "1": 0.6782765737874098,
+    "2": 0.7183859050866723,
+    "3": 0.669252226611727,
+    "4": 0.6821271045700043
   },
-  "per_fold_macro_f1_mean": 0.6782135828735681,
-  "per_fold_macro_f1_std": 0.04240965231339878,
+  "per_fold_macro_f1_mean": 0.6818845771314145,
+  "per_fold_macro_f1_std": 0.02193965191631032,
   "binary_pos_neg_vs_B0": {
-    "n": 489,
-    "accuracy": 0.9754601226993865
+    "n": 525,
+    "accuracy": 0.8476190476190476
   },
   "config": {
     "id": "B2",
@@ -55,10 +55,10 @@
     "partition": "dev",
     "test_exposure": "none",
     "model": "cardiffnlp/twitter-roberta-base-sentiment",
-    "revision_requested": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
-    "model_commit": null,
+    "revision_requested": "main",
+    "model_commit": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
     "device": "cuda",
-    "posts_truncated_at_128_tokens": 0,
+    "posts_truncated_at_128_tokens": 19,
     "versions": {
       "python": "3.13.7",
       "torch": "2.15.0+cu134",

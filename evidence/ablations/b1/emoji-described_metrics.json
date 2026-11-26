@@ -7,7 +7,7 @@
   "cross_validation": "5-fold stratified",
   "test_exposure": "none",
   "config": {
-    "data_version": "kaggle-social-2026-10-30",
+    "data_version": "youtube-comments-sentiment",
     "split": "splits/split.csv",
     "partition": "dev",
     "split_seed": 42,
@@ -37,18 +37,18 @@
   },
   "primary_metric": {
     "name": "macro_f1",
-    "value": 0.7027622748632298,
+    "value": 0.552274730376856,
     "direction": "higher_is_better",
     "units": "unitless_0_to_1"
   },
   "pooled": {
-    "n": 521,
-    "macro_f1": 0.7027622748632298,
-    "accuracy": 0.8541266794625719,
+    "n": 798,
+    "macro_f1": 0.552274730376856,
+    "accuracy": 0.5526315789473685,
     "per_class_f1": {
-      "negative": 0.8106060606060606,
-      "neutral": 0.4,
-      "positive": 0.897680763983629
+      "negative": 0.5592920353982301,
+      "neutral": 0.47470817120622566,
+      "positive": 0.6228239845261122
     },
     "confusion_matrix": {
       "labels": [
@@ -58,37 +58,37 @@
       ],
       "rows_true_cols_pred": [
         [
-          107,
-          0,
-          38
+          158,
+          74,
+          36
         ],
         [
-          1,
-          9,
-          22
+          88,
+          122,
+          63
         ],
         [
-          11,
-          4,
-          329
+          51,
+          45,
+          161
         ]
       ]
     }
   },
   "per_fold_macro_f1": {
-    "0": 0.6208569715419031,
-    "1": 0.7154649947753396,
-    "2": 0.7454270298723517,
-    "3": 0.7684684684684684,
-    "4": 0.6720017349815658
+    "0": 0.5443977591036414,
+    "1": 0.5526556776556776,
+    "2": 0.5579611459914352,
+    "3": 0.5724995653196691,
+    "4": 0.5275658807212206
   },
-  "per_fold_macro_f1_mean": 0.7044438399279257,
-  "per_fold_macro_f1_std": 0.0590328203457173,
+  "per_fold_macro_f1_mean": 0.5510160057583288,
+  "per_fold_macro_f1_std": 0.01662961500796406,
   "binary_pos_neg_vs_B0": {
-    "n": 489,
-    "accuracy": 0.8997955010224948
+    "n": 525,
+    "accuracy": 0.7619047619047619
   },
-  "runtime_seconds": 1.0216603000008035,
+  "runtime_seconds": 1.1478559999995923,
   "hardware": "CPU: AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
   "outputs": {
     "predictions": "C:\\Users\\John\\Documents\\GitHub\\CS271-Team4-ClassifyingSentiment\\evidence\\ablations\\b1\\emoji-described_predictions.csv",

@@ -1,6 +1,10 @@
 method,role,n_test,n_seeds,macro_f1,seed_sd,ci95_low,ci95_high,accuracy,f1_negative,f1_neutral,f1_positive,binary_pos_neg_accuracy
-B1,simple baseline (TF-IDF + logistic regression),131,1,0.7269,0.0,0.5902,0.8498,0.8931,0.8923,0.3636,0.9247,0.9431
-B2,zero-shot TweetEval RoBERTa = P without fine-tuning,131,1,0.684,0.0,0.59,0.7825,0.8397,0.8254,0.2963,0.9302,0.9512
-P-raw,"proposed: fine-tuned RoBERTa, emojis kept",131,3,0.8931,0.0191,0.7827,0.9649,0.9542,0.9544,0.752,0.973,0.981
-P-removed,ablation: P with emojis removed,131,3,0.895,0.0184,0.7827,0.9644,0.9517,0.9454,0.7686,0.9711,0.9756
-P-described,ablation: P with emojis as text,131,3,0.8909,0.0159,0.7791,0.9632,0.9517,0.9496,0.752,0.9711,0.9783
+B1,simple baseline (TF-IDF + logistic regression),200,1,0.521,0.0,0.4543,0.5893,0.52,0.4961,0.5068,0.56,0.6667
+B1-removed,B1 with emojis removed,200,1,0.521,0.0,0.4543,0.5893,0.52,0.4961,0.5068,0.56,0.6667
+B1-described,B1 with emojis as text,200,1,0.5502,0.0,0.477,0.6165,0.55,0.5344,0.5147,0.6015,0.7045
+B2,zero-shot TweetEval RoBERTa = P without fine-tuning,200,1,0.6873,0.0,0.6217,0.7484,0.685,0.7442,0.64,0.6777,0.803
+B2-removed,B2 with emojis removed,200,1,0.6961,0.0,0.63,0.7569,0.695,0.7669,0.649,0.6724,0.7955
+B2-described,B2 with emojis as text,200,1,0.6874,0.0,0.62,0.7489,0.685,0.7634,0.6267,0.6723,0.7879
+P-raw,"proposed: fine-tuned RoBERTa, emojis kept",200,3,0.7424,0.0134,0.6838,0.7974,0.7433,0.7704,0.7074,0.7495,0.8434
+P-removed,ablation: P with emojis removed,200,3,0.7274,0.0127,0.6647,0.7847,0.7283,0.7542,0.6949,0.7331,0.8308
+P-described,ablation: P with emojis as text,200,3,0.7432,0.003,0.6841,0.8,0.7433,0.7566,0.7185,0.7545,0.8409

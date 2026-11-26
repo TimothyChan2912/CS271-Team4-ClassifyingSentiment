@@ -1,46 +1,50 @@
 {
   "partition_sizes": {
-    "dev": 521,
-    "test": 131
+    "dev": 798,
+    "test": 200
   },
   "class_counts_by_partition": {
     "dev": {
-      "negative": 145,
-      "neutral": 32,
-      "positive": 344
+      "negative": 268,
+      "neutral": 273,
+      "positive": 257
     },
     "test": {
-      "negative": 36,
-      "neutral": 8,
-      "positive": 87
+      "negative": 67,
+      "neutral": 68,
+      "positive": 65
     }
   },
   "class_counts_by_fold": {
     "0": {
-      "negative": 29,
-      "neutral": 7,
-      "positive": 69
+      "negative": 54,
+      "neutral": 54,
+      "positive": 52
     },
     "1": {
-      "negative": 29,
-      "neutral": 6,
-      "positive": 69
+      "negative": 54,
+      "neutral": 54,
+      "positive": 52
     },
     "2": {
-      "negative": 29,
-      "neutral": 6,
-      "positive": 69
+      "negative": 54,
+      "neutral": 55,
+      "positive": 51
     },
     "3": {
-      "negative": 29,
-      "neutral": 6,
-      "positive": 69
+      "negative": 53,
+      "neutral": 55,
+      "positive": 51
     },
     "4": {
-      "negative": 29,
-      "neutral": 7,
-      "positive": 68
+      "negative": 53,
+      "neutral": 55,
+      "positive": 51
     }
+  },
+  "emoji_counts_by_partition": {
+    "dev": 152,
+    "test": 33
   },
   "settings": {
     "seed": 42,

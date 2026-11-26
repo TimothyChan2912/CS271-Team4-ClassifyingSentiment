@@ -1,76 +1,102 @@
-import os, json, hashlib
-import pandas as pd
+"""Prepare labeled YouTube comments for the sentiment models.
+
+--datasize limits CSV records read, before filtering and deduplication.
+"""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+
 import emoji
+import pandas as pd
 
-RAW = "data/raw/sentimentdataset.csv"
-MAP_PATH = "configs/emotion_map.csv"
-DRAFT_PATH = "configs/emotion_map_draft.csv"
+RAW = "data/raw/youtube-comments-sentiment.csv"
+DEFAULT_DATASIZE = 10000
+SENTIMENTS = {"negative", "neutral", "positive"}
 
-for d in ["configs", "evidence", "data/processed"]:
-    os.makedirs(d, exist_ok=True)
 
-# frozen data version (PROTOCOL.md Section 2); set ALLOW_NEW_RAW=1 only when deliberately
-# moving to a new dataset version, then update this hash and version the protocol
-EXPECTED_SHA256 = "725c6f7bc928c2bf741094f37078024b305982523fe6d0b8cb20a6cf5275c63b"
-raw_sha256 = hashlib.sha256(open(RAW, "rb").read()).hexdigest()
-if raw_sha256 != EXPECTED_SHA256 and os.environ.get("ALLOW_NEW_RAW") != "1":
-    raise SystemExit(f"{RAW} has SHA-256 {raw_sha256}, expected {EXPECTED_SHA256}. "
-                     "Re-download the Kaggle file (it may have been updated) or check the path.")
+def normalize_text(text):
+    """Comparison keys only; the model still receives the original trimmed text."""
+    return (text.str.lower()
+            .str.replace(r"http\S+|www\.\S+", "", regex=True)
+            .str.replace(r"@\w+", "", regex=True)
+            .str.replace(r"\s+", " ", regex=True).str.strip())
 
-df = pd.read_csv(RAW)
-df = df.rename(columns={"Text": "text", "Sentiment": "emotion"})
-df = df[["text", "emotion"]].copy()
-counts = {"raw": len(df)}
 
-# basic cleaning
-df["text"] = df["text"].astype(str).str.strip()
-df["emotion"] = df["emotion"].astype(str).str.strip().str.lower()
-df = df[df["text"].ne("") & df["text"].ne("nan")]
-counts["after_empty_removed"] = len(df)
+def clean_comments(raw):
+    """Return the model table and cleaning counts for a YouTube CSV frame."""
+    columns = {"CommentID": "id", "CommentText": "text", "Sentiment": "sentiment"}
+    missing = set(columns) - set(raw.columns)
+    if missing:
+        raise ValueError(f"YouTube CSV is missing required columns: {sorted(missing)}")
+    df = raw[list(columns)].rename(columns=columns).copy()
+    counts = {"raw": len(df)}
 
-# duplicates and conflicts
-df["norm"] = (df["text"].str.lower()
-              .str.replace(r"http\S+|www\.\S+", "", regex=True)
-              .str.replace(r"@\w+", "", regex=True)
-              .str.replace(r"\s+", " ", regex=True).str.strip())
+    df["id"] = df["id"].astype("string").fillna("").str.strip()
+    df["text"] = df["text"].astype("string").fillna("").str.strip()
+    df["sentiment"] = df["sentiment"].astype("string").fillna("").str.strip().str.lower()
+    df["norm"] = normalize_text(df["text"])
+    # Also exclude comments consisting entirely of URLs or mentions.
+    df = df[df["norm"].ne("")].copy()
+    counts["after_empty_removed"] = len(df)
 
-conflicts = df.groupby("norm")["emotion"].nunique()
-counts["conflicting_groups"] = int((conflicts > 1).sum())
-df = df[~df["norm"].isin(conflicts[conflicts > 1].index)]
-df = df.drop_duplicates(subset="norm")
-counts["after_dedup"] = len(df)
+    # This source already supplies three-class labels; no emotion map is needed.
+    valid = df["sentiment"].isin(SENTIMENTS)
+    counts["dropped_invalid_sentiment"] = int((~valid).sum())
+    df = df[valid].copy()
 
-# stage 1: write the draft map and stop if the real map doesn't exist yet
-if not os.path.exists(MAP_PATH):
-    emo = df["emotion"].value_counts().rename_axis("emotion").reset_index(name="n")
-    emo["sentiment"] = ""   # fill with positive / negative / neutral / drop
-    emo.to_csv(DRAFT_PATH, index=False)
-    raise SystemExit(f"Fill in {DRAFT_PATH}, save it as {MAP_PATH}, then rerun.")
+    conflicts = df.groupby("norm")["sentiment"].nunique()
+    counts["conflicting_groups"] = int((conflicts > 1).sum())
+    conflicting = df["norm"].isin(conflicts[conflicts > 1].index)
+    counts["conflicting_rows"] = int(conflicting.sum())
+    df = df[~conflicting]
+    counts["duplicates_removed"] = int(df.duplicated(subset="norm").sum())
+    df = df.drop_duplicates(subset="norm")
+    counts["after_dedup"] = len(df)
 
-# stage 2: apply the map
-m = pd.read_csv(MAP_PATH)
-m["emotion"] = m["emotion"].str.strip().str.lower()
-m["sentiment"] = m["sentiment"].str.strip().str.lower()
-m = m.set_index("emotion")["sentiment"]
+    if df.empty:
+        raise ValueError("No usable YouTube comments remain after cleaning; increase --datasize.")
+    if df["id"].eq("").any() or not df["id"].is_unique:
+        raise ValueError("Cleaned comments must have nonempty, unique CommentID values.")
 
-df["sentiment"] = df["emotion"].map(m)
-unmapped = df[df["sentiment"].isna()]["emotion"].unique()
-assert len(unmapped) == 0, f"Unmapped emotions: {unmapped}"
+    # Source IDs remain stable when --datasize changes.
+    df["id"] = "youtube_" + df["id"]
+    out = df[["id", "text", "sentiment"]].sort_values("id").reset_index(drop=True)
+    counts["final"] = len(out)
+    counts["class_counts"] = out["sentiment"].value_counts().to_dict()
+    counts["posts_with_emoji"] = int(out["text"].map(lambda t: emoji.emoji_count(t) > 0).sum())
+    return out, counts
 
-counts["dropped_ambiguous"] = int((df["sentiment"] == "drop").sum())
-df = df[df["sentiment"].isin(["negative", "neutral", "positive"])]
-counts["final"] = len(df)
 
-# stable IDs and save
-df = df.sort_values(["text", "emotion"]).reset_index(drop=True)
-df["id"] = [f"social_{i:04d}" for i in df.index]
-out = df[["id", "text", "emotion", "sentiment"]]
-out.to_parquet("data/processed/clean.parquet", index=False)
+def prepare_data(raw_path=RAW, datasize=DEFAULT_DATASIZE):
+    if datasize <= 0:
+        raise ValueError("--datasize must be a positive integer.")
+    raw = pd.read_csv(raw_path, usecols=["CommentID", "CommentText", "Sentiment"],
+                      dtype="string", nrows=datasize)
+    out, counts = clean_comments(raw)
+    # Hash in a stream instead of loading the entire large CSV into memory.
+    with open(raw_path, "rb") as source:
+        raw_sha256 = hashlib.file_digest(source, "sha256").hexdigest()
+    counts.update({"raw_file": str(raw_path), "raw_sha256": raw_sha256,
+                   "datasize_requested": datasize})
+    return out, counts
 
-# evidence
-counts["class_counts"] = out["sentiment"].value_counts().to_dict()
-counts["posts_with_emoji"] = int(out["text"].map(lambda t: emoji.emoji_count(t) > 0).sum())
-counts["raw_sha256"] = raw_sha256
-with open("evidence/prepare_data_counts.json", "w") as f:
-    json.dump(counts, f, indent=2)
-print(json.dumps(counts, indent=2))
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--datasize", type=int, default=DEFAULT_DATASIZE,
+                        help="maximum raw CSV records to read before cleaning (default: 10000)")
+    args = parser.parse_args(argv)
+    if args.datasize <= 0:
+        parser.error("--datasize must be a positive integer")
+    out, counts = prepare_data(datasize=args.datasize)
+    Path("data/processed").mkdir(parents=True, exist_ok=True)
+    Path("evidence").mkdir(parents=True, exist_ok=True)
+    out.to_parquet("data/processed/clean.parquet", index=False)
+    Path("evidence/prepare_data_counts.json").write_text(
+        json.dumps(counts, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps(counts, indent=2))
+
+
+if __name__ == "__main__":
+    main()

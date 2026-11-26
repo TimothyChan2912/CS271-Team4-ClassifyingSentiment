@@ -1,12 +1,12 @@
 {
   "pooled": {
-    "n": 521,
-    "macro_f1": 0.6770949152927663,
-    "accuracy": 0.817658349328215,
+    "n": 798,
+    "macro_f1": 0.6764153987738996,
+    "accuracy": 0.6729323308270677,
     "per_class_f1": {
-      "negative": 0.8897338403041825,
-      "neutral": 0.24793388429752067,
-      "positive": 0.8936170212765957
+      "negative": 0.694980694980695,
+      "neutral": 0.6132879045996593,
+      "positive": 0.7209775967413442
     },
     "confusion_matrix": {
       "labels": [
@@ -16,35 +16,35 @@
       ],
       "rows_true_cols_pred": [
         [
-          117,
-          25,
-          3
+          180,
+          78,
+          10
         ],
         [
-          0,
-          15,
-          17
+          46,
+          180,
+          47
         ],
         [
-          1,
-          49,
-          294
+          24,
+          56,
+          177
         ]
       ]
     }
   },
   "per_fold_macro_f1": {
-    "0": 0.687843130022071,
-    "1": 0.6711344211344211,
-    "2": 0.7285766158315178,
-    "3": 0.6859816780372888,
-    "4": 0.6110988254951103
+    "0": 0.6595065627323692,
+    "1": 0.6854428864114094,
+    "2": 0.7106854488504878,
+    "3": 0.6568452068954245,
+    "4": 0.6691329739442947
   },
-  "per_fold_macro_f1_mean": 0.6769269341040818,
-  "per_fold_macro_f1_std": 0.04253156014390826,
+  "per_fold_macro_f1_mean": 0.6763226157667972,
+  "per_fold_macro_f1_std": 0.022236364809157524,
   "binary_pos_neg_vs_B0": {
-    "n": 489,
-    "accuracy": 0.9754601226993865
+    "n": 525,
+    "accuracy": 0.8571428571428571
   },
   "config": {
     "id": "B2-EMOJI-DESCRIBED",
@@ -59,16 +59,16 @@
     "partition": "dev",
     "cross_validation": "5-fold reporting",
     "test_exposure": "none",
-    "model_commit": null,
+    "model_commit": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
     "device": "cuda",
-    "posts_truncated_at_128_tokens": 0,
+    "posts_truncated_at_128_tokens": 18,
     "versions": {
       "python": "3.13.7",
       "torch": "2.15.0+cu134",
       "transformers": "5.22.1"
     }
   },
-  "runtime_seconds": 11.404854899999918,
+  "runtime_seconds": 8.562391699997534,
   "hardware": "CPU: AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
   "outputs": {
     "predictions": "C:\\Users\\John\\Documents\\GitHub\\CS271-Team4-ClassifyingSentiment\\evidence\\ablations\\b2\\emoji-described_predictions.csv",

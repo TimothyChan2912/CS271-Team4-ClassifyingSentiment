@@ -1,15 +1,19 @@
 {
-  "raw": 732,
-  "after_empty_removed": 732,
+  "raw": 1000,
+  "after_empty_removed": 1000,
+  "dropped_invalid_sentiment": 0,
   "conflicting_groups": 0,
-  "after_dedup": 706,
-  "dropped_ambiguous": 54,
-  "final": 652,
+  "conflicting_rows": 0,
+  "duplicates_removed": 2,
+  "after_dedup": 998,
+  "final": 998,
   "class_counts": {
-    "positive": 431,
-    "negative": 181,
-    "neutral": 40
+    "neutral": 341,
+    "negative": 335,
+    "positive": 322
   },
-  "posts_with_emoji": 11,
-  "raw_sha256": "725c6f7bc928c2bf741094f37078024b305982523fe6d0b8cb20a6cf5275c63b"
+  "posts_with_emoji": 185,
+  "raw_file": "data/raw/youtube-comments-sentiment.csv",
+  "raw_sha256": "368b41f5675f0bd2313ab41c7f524489c54cb8792e31e24a87091c70c118c3fe",
+  "datasize_requested": 1000
 }

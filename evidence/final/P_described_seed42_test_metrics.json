@@ -4,7 +4,7 @@
   "seed": 42,
   "learning_rate": 3e-05,
   "emoji_mode": "described",
-  "trained_on": "all 521 dev posts",
+  "trained_on": "all 798 dev posts",
   "config": {
     "model_name": "cardiffnlp/twitter-roberta-base-sentiment",
     "revision": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
@@ -36,22 +36,22 @@
   "train_log": [
     {
       "epoch": 1,
-      "train_loss": 0.54487
+      "train_loss": 0.76329
     },
     {
       "epoch": 2,
-      "train_loss": 0.51319
+      "train_loss": 0.49433
     },
     {
       "epoch": 3,
-      "train_loss": 0.16007
+      "train_loss": 0.29678
     },
     {
       "epoch": 4,
-      "train_loss": 0.05026
+      "train_loss": 0.1635
     }
   ],
-  "train_seconds": 7.6,
+  "train_seconds": 18.3,
   "hardware": "Windows 11, AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD, device=cuda",
   "versions": {
     "python": "3.13.7",
@@ -59,13 +59,13 @@
     "transformers": "5.22.1"
   },
   "partition": "test",
-  "n": 131,
-  "macro_f1": 0.8935867446393763,
-  "accuracy": 0.9541984732824428,
+  "n": 200,
+  "macro_f1": 0.7397789675886294,
+  "accuracy": 0.74,
   "per_class_f1": {
-    "negative": 0.96,
-    "neutral": 0.75,
-    "positive": 0.9707602339181286
+    "negative": 0.7591240875912408,
+    "neutral": 0.7121212121212122,
+    "positive": 0.7480916030534351
   },
   "confusion_matrix": {
     "labels": [
@@ -75,24 +75,24 @@
     ],
     "rows_true_cols_pred": [
       [
-        36,
-        0,
-        0
+        52,
+        10,
+        5
       ],
       [
-        1,
-        6,
-        1
+        9,
+        47,
+        12
       ],
       [
-        2,
-        2,
-        83
+        9,
+        7,
+        49
       ]
     ]
   },
   "binary_pos_neg_vs_B0": {
-    "n": 123,
-    "accuracy": 0.983739837398374
+    "n": 132,
+    "accuracy": 0.8409090909090909
   }
 }

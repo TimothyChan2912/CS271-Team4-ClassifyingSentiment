@@ -27,6 +27,9 @@ REVISION = "main"
 
 def main():
     dev = load_dev()
+    baseline = json.loads((ROOT / "evidence" / "b2_tweeteval_metrics.json").read_text())
+    revision = (baseline["config"].get("model_commit")
+                or baseline["config"].get("revision_requested") or REVISION)
 
     OUTPUT.mkdir(parents=True, exist_ok=True)
 
@@ -51,7 +54,7 @@ def main():
             texts,
             batch_size=BATCH_SIZE,
             device_arg="auto",
-            revision=REVISION,
+            revision=revision,
         )
 
         runtime = perf_counter() - started
@@ -78,7 +81,7 @@ def main():
         report["config"] = {
             "id": method_id,
             "model": MODEL,
-            "revision_requested": REVISION,
+            "revision_requested": revision,
             "max_length": MAX_LENGTH,
             "truncation": True,
             "zero_shot": True,

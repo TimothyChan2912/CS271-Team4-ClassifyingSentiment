@@ -8,14 +8,14 @@
         43,
         44
       ],
-      "mean_cv_macro_f1": 0.7877069153164306,
-      "sd_across_seeds": 0.004379258052337493,
-      "mean_fold_sd": 0.06433730441980477,
-      "pooled_macro_f1_mean": 0.7868309653089257,
+      "mean_cv_macro_f1": 0.6837506697851691,
+      "sd_across_seeds": 0.004186381342764943,
+      "mean_fold_sd": 0.038799106408128246,
+      "pooled_macro_f1_mean": 0.6841502704775168,
       "per_class_f1_mean": {
-        "negative": 0.9490792503113349,
-        "neutral": 0.46157059314954046,
-        "positive": 0.949843052465902
+        "negative": 0.7305206496893035,
+        "neutral": 0.607543479911901,
+        "positive": 0.7143866818313459
       }
     },
     "removed": {
@@ -24,14 +24,14 @@
         43,
         44
       ],
-      "mean_cv_macro_f1": 0.7933476728018135,
-      "sd_across_seeds": 0.004532153271999338,
-      "mean_fold_sd": 0.06840182142469331,
-      "pooled_macro_f1_mean": 0.7918171169639877,
+      "mean_cv_macro_f1": 0.6808984809600332,
+      "sd_across_seeds": 0.004185315635174413,
+      "mean_fold_sd": 0.04146367079965834,
+      "pooled_macro_f1_mean": 0.6815609846093246,
       "per_class_f1_mean": {
-        "negative": 0.9513877207737594,
-        "neutral": 0.47326649958228906,
-        "positive": 0.9507971305359146
+        "negative": 0.7085458608088945,
+        "neutral": 0.6189798814159427,
+        "positive": 0.7171572116031366
       }
     },
     "described": {
@@ -40,14 +40,14 @@
         43,
         44
       ],
-      "mean_cv_macro_f1": 0.7956154050695458,
-      "sd_across_seeds": 0.006695438027544954,
-      "mean_fold_sd": 0.0668155995024035,
-      "pooled_macro_f1_mean": 0.7944045906718645,
+      "mean_cv_macro_f1": 0.6793520316928067,
+      "sd_across_seeds": 0.006917857756017573,
+      "mean_fold_sd": 0.04079595546294876,
+      "pooled_macro_f1_mean": 0.6798598289259533,
       "per_class_f1_mean": {
-        "negative": 0.9501694268725386,
-        "neutral": 0.48224728487886387,
-        "positive": 0.9507970602641915
+        "negative": 0.7214325354294392,
+        "neutral": 0.6014043487576167,
+        "positive": 0.7167426025908042
       }
     }
   }

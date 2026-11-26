@@ -29,8 +29,7 @@ class BaselineTests(unittest.TestCase):
         posts = self.posts if posts is None else posts
         data = BytesIO(posts[["id", "text", "sentiment"]].to_parquet(index=False))
         split = StringIO(self.posts[["id", "partition", "fold"]].to_csv(index=False))
-        with patch("src.data_io.CLEAN", data), patch("src.data_io.SPLIT", split), \
-                patch("src.data_io.EXPECTED_DEV", 15):
+        with patch("src.data_io.CLEAN", data), patch("src.data_io.SPLIT", split):
             return load_dev()
 
     def test_metric_conventions(self):
@@ -140,17 +139,50 @@ class BaselineTests(unittest.TestCase):
                                  expected["binary_pos_neg_vs_B0"])
 
     def test_run_all_invokes_b1_and_optional_b2(self):
-        for options in [[], ["--skip-b2"]]:
+        for options, size in [([], 10000), (["--skip-b2"], 10000),
+                              (["--datasize", "2000"], 2000),
+                              (["--datasize", "500", "--skip-b2", "--remake-split"], 500)]:
             with self.subTest(options=options), \
                     patch.object(sys, "argv", ["run_all.py", *options]), \
                     patch("subprocess.run", return_value=SimpleNamespace(
                         returncode=0, stdout="", stderr="")) as launch, \
                     patch("builtins.open", mock_open()), redirect_stdout(StringIO()):
                 runpy.run_path(str(ROOT / "run_all.py"), run_name="__main__")
-            expected = [["src/data_cleaning.py"], ["src/check_split.py"], ["src/baseline_logreg.py"]]
-            if not options:
+            expected = [["src/data_cleaning.py", "--datasize", str(size)],
+                        ["src/make_split.py"], ["src/check_split.py"], ["src/baseline_logreg.py"],
+                        ["src/run_b1_emoji_ablation.py"]]
+            if "--skip-b2" not in options:
                 expected.append(["src/baseline_tweeteval.py"])
+                expected.append(["src/run_b2_emoji_ablation.py"])
+            expected.append(["src/run_summary.py", *(["--skip-b2"] if "--skip-b2" in options else [])])
             self.assertEqual([call.args[0][1:] for call in launch.call_args_list], expected)
+
+    def test_run_all_full_report_includes_proposed_and_guarded_test_results(self):
+        with patch.object(sys, "argv", ["run_all.py", "--proposed", "--final"]), \
+                patch("subprocess.run", return_value=SimpleNamespace(
+                    returncode=0, stdout="", stderr="")) as launch, \
+                patch("builtins.open", mock_open()), redirect_stdout(StringIO()):
+            runpy.run_path(str(ROOT / "run_all.py"), run_name="__main__")
+        commands = [call.args[0][1:] for call in launch.call_args_list]
+        self.assertIn(["src/proposed_finetune.py", "cv"], commands)
+        self.assertIn(["src/proposed_finetune.py", "ablation"], commands)
+        self.assertIn(["src/proposed_finetune.py", "final"], commands)
+        summary = next(call for call in launch.call_args_list if "src/run_summary.py" in call.args[0])
+        self.assertEqual(summary.args[0][1:], ["src/run_summary.py", "--proposed", "--final"])
+        self.assertEqual(summary.kwargs["env"]["FINAL_EVAL"], "1")
+        self.assertLess(commands.index(["src/final_eval.py"]), commands.index(summary.args[0][1:]))
+
+    def test_run_all_rejects_invalid_datasize_before_starting_work(self):
+        from contextlib import redirect_stderr
+
+        for value in ["0", "-10", "1.5", "abc"]:
+            with self.subTest(value=value), \
+                    patch.object(sys, "argv", ["run_all.py", "--datasize", value]), \
+                    patch("subprocess.run") as launch, redirect_stderr(StringIO()):
+                with self.assertRaises(SystemExit) as error:
+                    runpy.run_path(str(ROOT / "run_all.py"), run_name="__main__")
+                self.assertEqual(error.exception.code, 2)
+                launch.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -1,0 +1,71 @@
+{
+  "method_id": "B1-removed",
+  "emoji_mode": "removed",
+  "trained_on": "all 798 dev posts",
+  "config": {
+    "data_version": "youtube-comments-sentiment",
+    "split": "splits/split.csv",
+    "partition": "dev",
+    "split_seed": 42,
+    "n_folds": 5,
+    "tfidf": {
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 1,
+      "sublinear_tf": true,
+      "lowercase": true,
+      "norm": "l2",
+      "use_idf": true,
+      "smooth_idf": true,
+      "token_pattern": "(?u)\\b\\w\\w+\\b"
+    },
+    "classifier": {
+      "C": 1.0,
+      "class_weight": "balanced",
+      "solver": "lbfgs",
+      "l1_ratio": 0.0,
+      "fit_intercept": true,
+      "max_iter": 1000,
+      "tol": 1e-06
+    }
+  },
+  "partition": "test",
+  "n": 200,
+  "macro_f1": 0.5209911153587484,
+  "accuracy": 0.52,
+  "per_class_f1": {
+    "negative": 0.49612403100775193,
+    "neutral": 0.5068493150684932,
+    "positive": 0.56
+  },
+  "confusion_matrix": {
+    "labels": [
+      "negative",
+      "neutral",
+      "positive"
+    ],
+    "rows_true_cols_pred": [
+      [
+        32,
+        21,
+        14
+      ],
+      [
+        20,
+        37,
+        11
+      ],
+      [
+        10,
+        20,
+        35
+      ]
+    ]
+  },
+  "binary_pos_neg_vs_B0": {
+    "n": 132,
+    "accuracy": 0.6666666666666666
+  }
+}

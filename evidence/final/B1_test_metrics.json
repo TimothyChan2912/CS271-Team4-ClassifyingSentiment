@@ -1,8 +1,9 @@
 {
   "method_id": "B1",
-  "trained_on": "all 521 dev posts",
+  "emoji_mode": "raw",
+  "trained_on": "all 798 dev posts",
   "config": {
-    "data_version": "kaggle-social-2026-10-30",
+    "data_version": "youtube-comments-sentiment",
     "split": "splits/split.csv",
     "partition": "dev",
     "split_seed": 42,
@@ -31,13 +32,13 @@
     }
   },
   "partition": "test",
-  "n": 131,
-  "macro_f1": 0.726891746246585,
-  "accuracy": 0.8931297709923665,
+  "n": 200,
+  "macro_f1": 0.5209911153587484,
+  "accuracy": 0.52,
   "per_class_f1": {
-    "negative": 0.8923076923076924,
-    "neutral": 0.36363636363636365,
-    "positive": 0.9247311827956989
+    "negative": 0.49612403100775193,
+    "neutral": 0.5068493150684932,
+    "positive": 0.56
   },
   "confusion_matrix": {
     "labels": [
@@ -47,24 +48,24 @@
     ],
     "rows_true_cols_pred": [
       [
-        29,
-        0,
-        7
+        32,
+        21,
+        14
       ],
       [
-        0,
-        2,
-        6
+        20,
+        37,
+        11
       ],
       [
-        0,
-        1,
-        86
+        10,
+        20,
+        35
       ]
     ]
   },
   "binary_pos_neg_vs_B0": {
-    "n": 123,
-    "accuracy": 0.943089430894309
+    "n": 132,
+    "accuracy": 0.6666666666666666
   }
 }

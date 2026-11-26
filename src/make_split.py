@@ -1,4 +1,5 @@
 import os, json
+import emoji
 import pandas as pd
 from sklearn.model_selection import train_test_split, StratifiedKFold
 
@@ -10,7 +11,18 @@ def build_split(df):
     """Return (split, dev) for the cleaned data. Pure function: no file I/O,
     so check_split.py can rebuild the split and confirm it is deterministic."""
     df = df.sort_values("id").reset_index(drop=True)
-    dev, test = train_test_split(df, test_size=TEST_SIZE, random_state=SEED, stratify=df["sentiment"])
+    if set(df["sentiment"]) != {"negative", "neutral", "positive"}:
+        raise ValueError("The cleaned data must contain all three sentiment classes; increase --datasize.")
+    try:
+        dev, test = train_test_split(df, test_size=TEST_SIZE, random_state=SEED, stratify=df["sentiment"])
+    except ValueError as exc:
+        raise ValueError("Not enough cleaned comments for a stratified split; increase --datasize.") from exc
+    dev_counts = dev["sentiment"].value_counts().reindex(
+        ["negative", "neutral", "positive"], fill_value=0)
+    if dev_counts.min() < N_FOLDS or test["sentiment"].nunique() != 3:
+        raise ValueError(
+            f"Need all three classes in test and at least {N_FOLDS} development comments per class "
+            "for cross-validation; increase --datasize.")
     dev = dev.sort_values("id").reset_index(drop=True)
     test = test.sort_values("id").reset_index(drop=True)
 
@@ -39,6 +51,9 @@ if __name__ == "__main__":
         split.groupby("partition")["sentiment"].value_counts().unstack(fill_value=0).to_dict("index"))
     summary["class_counts_by_fold"] = (
         dev.groupby("fold")["sentiment"].value_counts().unstack(fill_value=0).to_dict("index"))
+    summary["emoji_counts_by_partition"] = {
+        partition: int(rows["text"].map(lambda text: emoji.emoji_count(text) > 0).sum())
+        for partition, rows in split.groupby("partition")}
     summary["settings"] = {"seed": SEED, "n_folds": N_FOLDS, "test_size": TEST_SIZE}
     with open("evidence/split_summary.json", "w") as f:
         json.dump(summary, f, indent=2)

@@ -1,24 +1,25 @@
 {
   "method_id": "B2",
+  "emoji_mode": "raw",
   "trained_on": "nothing (zero-shot)",
   "model": "cardiffnlp/twitter-roberta-base-sentiment",
   "revision_requested": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
   "model_commit": "daefdd1f6ae931839bce4d0f3db0a1a4265cd50f",
   "device": "cuda",
-  "posts_truncated_at_128_tokens": 0,
+  "posts_truncated_at_128_tokens": 3,
   "versions": {
     "python": "3.13.7",
     "torch": "2.15.0+cu134",
     "transformers": "5.22.1"
   },
   "partition": "test",
-  "n": 131,
-  "macro_f1": 0.6839752266108855,
-  "accuracy": 0.8396946564885496,
+  "n": 200,
+  "macro_f1": 0.687290665641617,
+  "accuracy": 0.685,
   "per_class_f1": {
-    "negative": 0.8253968253968254,
-    "neutral": 0.2962962962962963,
-    "positive": 0.9302325581395349
+    "negative": 0.7441860465116279,
+    "neutral": 0.64,
+    "positive": 0.6776859504132231
   },
   "confusion_matrix": {
     "labels": [
@@ -28,24 +29,24 @@
     ],
     "rows_true_cols_pred": [
       [
-        26,
-        9,
-        1
+        48,
+        16,
+        3
       ],
       [
-        0,
-        4,
-        4
+        8,
+        48,
+        12
       ],
       [
-        1,
         6,
-        80
+        18,
+        41
       ]
     ]
   },
   "binary_pos_neg_vs_B0": {
-    "n": 123,
-    "accuracy": 0.9512195121951219
+    "n": 132,
+    "accuracy": 0.803030303030303
   }
 }

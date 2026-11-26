@@ -8,6 +8,7 @@ Fig. 2: development per-class F1 (out-of-fold) for each method; P bars are means
         with SD error bars. It shows where the methods differ (neutral) and what the
         emoji ablation changes.
 """
+import argparse
 import json
 from pathlib import Path
 
@@ -59,23 +60,28 @@ def fig1():
     return fig
 
 
-def dev_reports():
+def dev_reports(skip_b2=False):
     """{method: [pooled dev reports]} from saved out-of-fold predictions/metrics."""
-    out = {"B1": [json.loads((EVID / "b1_logreg_metrics.json").read_text())],
-           "B2": [json.loads((EVID / "b2_tweeteval_metrics.json").read_text())]}
-    grid = json.loads((EVID / "proposed" / "cv_grid.json").read_text())
+    out = {}
+    for method, name in (("B1", "b1_logreg"), ("B2", "b2_tweeteval")):
+        path = EVID / f"{name}_metrics.json"
+        if path.exists() and not (skip_b2 and method == "B2"):
+            out[method] = [json.loads(path.read_text())]
+    grid_path = EVID / "proposed" / "cv_grid.json"
+    if not grid_path.exists():
+        return out
+    grid = json.loads(grid_path.read_text())
     lr = grid["selected_learning_rate"]
-    out["P-raw"] = [json.loads(p.read_text())
-                    for p in sorted((EVID / "proposed" / "cv").glob(f"P_raw_lr{lr:g}_seed*_metrics.json"))]
-    for mode in ("removed", "described"):
-        files = sorted((EVID / "proposed" / "ablation").glob(f"P_{mode}_lr{lr:g}_seed*_metrics.json"))
+    for mode in ("raw", "removed", "described"):
+        folder = "cv" if mode == "raw" else "ablation"
+        files = sorted((EVID / "proposed" / folder).glob(f"P_{mode}_lr{lr:g}_seed*_metrics.json"))
         if files:
             out[f"P-{mode}"] = [json.loads(p.read_text()) for p in files]
     return out
 
 
-def fig2():
-    reports = dev_reports()
+def fig2(skip_b2=False):
+    reports = dev_reports(skip_b2=skip_b2)
     methods = [m for m in COLORS if m in reports]
     width = 0.8 / len(methods)
     x = np.arange(len(LABELS))
@@ -89,7 +95,8 @@ def fig2():
                label=NAMES[m])
         if sd is not None:
             ax.errorbar(pos, mean, yerr=sd, fmt="none", ecolor=INK, elinewidth=0.8, capsize=2)
-    ax.set_xticks(x, ["Negative\n(n=145)", "Neutral\n(n=32)", "Positive\n(n=344)"])
+    counts = json.loads((EVID / "split_summary.json").read_text())["class_counts_by_partition"]["dev"]
+    ax.set_xticks(x, [f"{label.title()}\n(n={counts.get(label, 0)})" for label in LABELS])
     ax.set_ylabel("Dev F1, out-of-fold (0 to 1)", fontsize=8, color=INK)
     ax.set_ylim(0, 1.05)
     ax.legend(fontsize=6.5, frameon=False, ncol=2, loc="lower center", bbox_to_anchor=(0.5, 1.02))
@@ -98,9 +105,13 @@ def fig2():
     return fig
 
 
-def main():
+def main(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--skip-b2", action="store_true")
+    args = parser.parse_args(argv)
     FIGS.mkdir(parents=True, exist_ok=True)
-    for name, make in [("fig1_test_macro_f1", fig1), ("fig2_dev_per_class_f1", fig2)]:
+    for name, make in [("fig1_test_macro_f1", fig1),
+                       ("fig2_dev_per_class_f1", lambda: fig2(skip_b2=args.skip_b2))]:
         fig = make()
         for ext in ("pdf", "png"):
             fig.savefig(FIGS / f"{name}.{ext}", dpi=200, bbox_inches="tight")

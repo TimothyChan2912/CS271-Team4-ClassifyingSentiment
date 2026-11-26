@@ -11,6 +11,25 @@ from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 LABELS = ["negative", "neutral", "positive"]  # fixed order, PROTOCOL.md Section 5
 
 
+def align_predictions(preds, posts):
+    """Validate saved predictions against a partition and align by ID."""
+    required = {"id", "fold", "y_true", "y_pred"}
+    if not required.issubset(preds.columns):
+        raise ValueError(f"Prediction columns missing: {sorted(required - set(preds.columns))}")
+    if (preds["id"].isna().any() or not preds["id"].is_unique
+            or len(preds) != len(posts) or set(preds["id"]) != set(posts["id"])):
+        raise ValueError("Prediction IDs do not match the current partition.")
+    aligned = preds.set_index("id").loc[posts["id"]].reset_index()
+    if not np.array_equal(aligned["y_true"].to_numpy(), posts["sentiment"].to_numpy()):
+        raise ValueError("Prediction labels do not match the current partition.")
+    folds = posts["fold"].to_numpy() if "fold" in posts else np.full(len(posts), -1)
+    if not np.array_equal(aligned["fold"].to_numpy(), folds):
+        raise ValueError("Prediction folds do not match the current partition.")
+    if aligned["y_pred"].isna().any() or not set(aligned["y_pred"]).issubset(LABELS):
+        raise ValueError("Predictions contain missing or unknown sentiment labels.")
+    return aligned
+
+
 def score(y_true, y_pred):
     """Macro-F1 (primary), accuracy, per-class F1, and confusion matrix."""
     y_true, y_pred = list(y_true), list(y_pred)
